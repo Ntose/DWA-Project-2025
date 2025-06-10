@@ -1,0 +1,6 @@
+@RESTful_Service_Module_HostAddress = http://localhost:5224
+
+GET {{RESTful_Service_Module_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

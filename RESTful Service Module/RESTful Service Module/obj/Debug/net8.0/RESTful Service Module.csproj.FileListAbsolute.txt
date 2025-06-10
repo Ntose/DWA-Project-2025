@@ -1,0 +1,32 @@
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\appsettings.json
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\RESTful Service Module.exe
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\RESTful Service Module.deps.json
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\RESTful Service Module.runtimeconfig.json
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\RESTful Service Module.dll
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\RESTful Service Module.pdb
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.csproj.AssemblyReference.cache
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.AssemblyInfoInputs.cache
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.AssemblyInfo.cs
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.csproj.CoreCompileInputs.cache
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\staticwebassets\msbuild.RESTful Service Module.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\staticwebassets\msbuild.build.RESTful Service Module.props
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.RESTful Service Module.props
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.RESTful Service Module.props
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\scopedcss\bundle\RESTful Service Module.styles.css
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful .8FF80313.Up2Date
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.dll
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\refint\RESTful Service Module.dll
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.pdb
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\RESTful Service Module.genruntimeconfig.cache
+C:\Users\ninot\source\repos\RESTful Service Module\RESTful Service Module\obj\Debug\net8.0\ref\RESTful Service Module.dll
