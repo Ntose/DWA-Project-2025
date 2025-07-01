@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -7,83 +7,43 @@ using WebAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ================================================
-// Register DbContext with SQL Server
-// ================================================
-builder.Services.AddDbContext<HeritageDbContext>(options =>
-	options.UseSqlServer(
-		builder.Configuration.GetConnectionString("DefaultConnection")));
+// 1) DbContext
+builder.Services.AddDbContext<HeritageDbContext>(opt =>
+	opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ================================================
-// Configure controllers and prevent JSON cycles
-// ================================================
+// 2) JSON cycle handling
 builder.Services.AddControllers()
-	.AddJsonOptions(options =>
+	.AddJsonOptions(o =>
 	{
-		options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-		options.JsonSerializerOptions.WriteIndented = true;
+		o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+		o.JsonSerializerOptions.WriteIndented = true;
 	});
 
-// ================================================
-// Configure Swagger with JWT support
-// ================================================
+// 3) Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-	c.SwaggerDoc("v1", new() { Title = "Cultural Heritage API", Version = "v1" });
+builder.Services.AddSwaggerGen();
 
-	c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-	{
-		Name = "Authorization",
-		In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-		Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-		Scheme = "Bearer",
-		BearerFormat = "JWT",
-		Description = "Enter 'Bearer' followed by your JWT token."
-	});
-
-	c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-	{
-		{
-			new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-			{
-				Reference = new Microsoft.OpenApi.Models.OpenApiReference
-				{
-					Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-					Id = "Bearer"
-				}
-			},
-			Array.Empty<string>()
-		}
-	});
-});
-
-// ================================================
-// Configure JWT authentication
-// ================================================
+// 4) JWT Auth
 var jwt = builder.Configuration.GetSection("Jwt");
-var jwtKey = jwt["Key"];
-var jwtIssuer = jwt["Issuer"];
-var jwtAudience = jwt["Audience"];
+var key = Encoding.UTF8.GetBytes(jwt["Key"]);
 
 builder.Services.AddAuthentication(options =>
 {
 	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer(opts =>
 {
-	options.RequireHttpsMetadata = false;
-	options.SaveToken = true;
-	options.TokenValidationParameters = new TokenValidationParameters
+	opts.RequireHttpsMetadata = false;
+	opts.SaveToken = true;
+	opts.TokenValidationParameters = new TokenValidationParameters
 	{
 		ValidateIssuer = true,
-		ValidIssuer = jwtIssuer,
 		ValidateAudience = true,
-		ValidAudience = jwtAudience,
 		ValidateIssuerSigningKey = true,
-		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-		ValidateLifetime = true,
+		ValidIssuer = jwt["Issuer"],
+		ValidAudience = jwt["Audience"],
+		IssuerSigningKey = new SymmetricSecurityKey(key),
 		ClockSkew = TimeSpan.Zero
 	};
 });
@@ -92,9 +52,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// ================================================
-// Middleware pipeline
-// ================================================
+// pipeline
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
@@ -105,5 +63,4 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
