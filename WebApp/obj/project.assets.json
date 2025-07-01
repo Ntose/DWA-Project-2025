@@ -3564,11 +3564,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ninot\\Desktop\\DWA-Project\\WebApp\\WebApp.fsproj",
+      "projectUniqueName": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebApp\\WebApp.fsproj",
       "projectName": "WebApp",
-      "projectPath": "C:\\Users\\ninot\\Desktop\\DWA-Project\\WebApp\\WebApp.fsproj",
+      "projectPath": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebApp\\WebApp.fsproj",
       "packagesPath": "C:\\Users\\ninot\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ninot\\Desktop\\DWA-Project\\WebApp\\obj\\",
+      "outputPath": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ninot\\AppData\\Roaming\\NuGet\\NuGet.Config",

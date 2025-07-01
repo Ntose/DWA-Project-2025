@@ -4169,11 +4169,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ninot\\Desktop\\DWA-Project\\WebAPI\\WebAPI.csproj",
+      "projectUniqueName": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\WebAPI.csproj",
       "projectName": "WebAPI",
-      "projectPath": "C:\\Users\\ninot\\Desktop\\DWA-Project\\WebAPI\\WebAPI.csproj",
+      "projectPath": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\WebAPI.csproj",
       "packagesPath": "C:\\Users\\ninot\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ninot\\Desktop\\DWA-Project\\WebAPI\\obj\\",
+      "outputPath": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ninot\\AppData\\Roaming\\NuGet\\NuGet.Config",

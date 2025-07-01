@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ec4P+G/DGS4=",
+  "dgSpecHash": "YkgW9UdBCE8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ninot\\Desktop\\DWA-Project\\WebApp\\WebApp.fsproj",
+  "projectFilePath": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebApp\\WebApp.fsproj",
   "expectedPackageFiles": [
     "C:\\Users\\ninot\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\ninot\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

@@ -8,9 +8,8 @@ namespace WebAPI.Data.Entities
 		public int Id { get; set; }
 		public string Name { get; set; }
 
-		// Navigation
-		public ICollection<CulturalHeritage> CulturalHeritages { get; set; }
-			= new List<CulturalHeritage>();
+		public ICollection<CulturalHeritage> CulturalHeritages { get; set; } = new List<CulturalHeritage>();
+
 	}
 
 	public class Topic
@@ -18,9 +17,8 @@ namespace WebAPI.Data.Entities
 		public int Id { get; set; }
 		public string Name { get; set; }
 
-		// Navigation
-		public ICollection<CulturalHeritageTopic> CulturalHeritageTopics { get; set; }
-			= new List<CulturalHeritageTopic>();
+		public ICollection<CulturalHeritageTopic> CulturalHeritageTopics { get; set; } = new List<CulturalHeritageTopic>();
+
 	}
 
 	public class CulturalHeritage
@@ -31,21 +29,16 @@ namespace WebAPI.Data.Entities
 		public string ImageUrl { get; set; }
 		public DateTime DateAdded { get; set; }
 
-		// FK to NationalMinority
 		public int NationalMinorityId { get; set; }
 		public NationalMinority NationalMinority { get; set; }
 
-		// Many-to-many bridge and comments
-		public ICollection<CulturalHeritageTopic> CulturalHeritageTopics { get; set; }
-			= new List<CulturalHeritageTopic>();
+		public ICollection<CulturalHeritageTopic> CulturalHeritageTopics { get; set; } = new List<CulturalHeritageTopic>();
 
-		public ICollection<Comment> Comments { get; set; }
-			= new List<Comment>();
+		public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 	}
 
 	public class CulturalHeritageTopic
 	{
-		// Composite PK (configured in OnModelCreating)
 		public int CulturalHeritageId { get; set; }
 		public CulturalHeritage CulturalHeritage { get; set; }
 
@@ -64,9 +57,7 @@ namespace WebAPI.Data.Entities
 		public string Phone { get; set; }
 		public DateTime DateRegistered { get; set; }
 
-		// Navigation
-		public ICollection<Comment> Comments { get; set; }
-			= new List<Comment>();
+		public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 	}
 
 	public class Comment
@@ -76,11 +67,9 @@ namespace WebAPI.Data.Entities
 		public DateTime Timestamp { get; set; }
 		public bool Approved { get; set; }
 
-		// FK to CulturalHeritage
 		public int CulturalHeritageId { get; set; }
 		public CulturalHeritage CulturalHeritage { get; set; }
 
-		// FK to ApplicationUser
 		public int UserId { get; set; }
 		public ApplicationUser ApplicationUser { get; set; }
 	}
