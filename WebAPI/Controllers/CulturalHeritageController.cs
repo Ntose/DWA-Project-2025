@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebAPI.Data;
 using WebAPI.Data.Entities;
+using WebAPI.Dtos.CulturalHeritage;
 
 namespace WebAPI.Controllers
 {
@@ -12,115 +15,84 @@ namespace WebAPI.Controllers
 	public class CulturalHeritageController : ControllerBase
 	{
 		private readonly HeritageDbContext _context;
+		private readonly IMapper _mapper;
 
-		public CulturalHeritageController(HeritageDbContext context)
+		public CulturalHeritageController(HeritageDbContext context, IMapper mapper)
 		{
 			_context = context;
+			_mapper = mapper;
 		}
 
-		// GET api/culturalheritage
+		// GET: api/CulturalHeritage
 		[HttpGet]
-		public async Task<IActionResult> GetAll([FromQuery] string name = null, [FromQuery] int? minorityId = null, [FromQuery] int page = 1, [FromQuery] int count = 10)
+		public async Task<ActionResult<IEnumerable<CulturalHeritageReadDto>>> GetAll()
 		{
-			var query = _context.CulturalHeritage
+			var entities = await _context.CulturalHeritage
 				.Include(ch => ch.NationalMinority)
-				.Include(ch => ch.CulturalHeritageTopics).ThenInclude(ct => ct.Topic)
-				.AsQueryable();
-
-			if (!string.IsNullOrEmpty(name))
-				query = query.Where(ch => ch.Name.Contains(name));
-
-			if (minorityId.HasValue)
-				query = query.Where(ch => ch.NationalMinorityId == minorityId.Value);
-
-			var results = await query
-				.OrderByDescending(ch => ch.DateAdded)
-				.Skip((page - 1) * count)
-				.Take(count)
 				.ToListAsync();
 
-			return Ok(results);
+			return Ok(_mapper.Map<IEnumerable<CulturalHeritageReadDto>>(entities));
 		}
 
-		// GET api/culturalheritage/{id}
+		// GET: api/CulturalHeritage/5
 		[HttpGet("{id}")]
-		public async Task<IActionResult> GetById(int id)
+		public async Task<ActionResult<CulturalHeritageReadDto>> Get(int id)
 		{
-			var heritage = await _context.CulturalHeritage
+			var entity = await _context.CulturalHeritage
 				.Include(ch => ch.NationalMinority)
-				.Include(ch => ch.CulturalHeritageTopics).ThenInclude(ct => ct.Topic)
-				.Include(ch => ch.Comments.Where(c => c.Approved)).ThenInclude(c => c.ApplicationUser)
 				.FirstOrDefaultAsync(ch => ch.Id == id);
 
-			return heritage is null ? NotFound() : Ok(heritage);
+			if (entity == null) return NotFound();
+			return Ok(_mapper.Map<CulturalHeritageReadDto>(entity));
 		}
 
-		// POST api/culturalheritage
+		// POST: api/CulturalHeritage
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] CulturalHeritage model)
+		[Authorize]
+		public async Task<ActionResult<CulturalHeritageReadDto>> Create(
+			[FromBody] CulturalHeritageCreateDto createDto)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			_context.CulturalHeritage.Add(model);
+			var entity = _mapper.Map<CulturalHeritage>(createDto);
+			_context.CulturalHeritage.Add(entity);
 			await _context.SaveChangesAsync();
 
-			if (model.CulturalHeritageTopics != null)
-			{
-				foreach (var rel in model.CulturalHeritageTopics)
-					rel.CulturalHeritageId = model.Id;
-
-				_context.CulturalHeritageTopic.AddRange(model.CulturalHeritageTopics);
-				await _context.SaveChangesAsync();
-			}
-
-			return CreatedAtAction(nameof(GetById), new { id = model.Id }, model);
+			var readDto = _mapper.Map<CulturalHeritageReadDto>(entity);
+			return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
 		}
 
-		// PUT api/culturalheritage/{id}
+		// PUT: api/CulturalHeritage/5
 		[HttpPut("{id}")]
-		public async Task<IActionResult> Update(int id, [FromBody] CulturalHeritage updated)
+		[Authorize]
+		public async Task<IActionResult> Update(
+			int id,
+			[FromBody] CulturalHeritageUpdateDto updateDto)
 		{
-			if (id != updated.Id)
-				return BadRequest("ID mismatch");
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-			var heritage = await _context.CulturalHeritage
-				.Include(ch => ch.CulturalHeritageTopics)
-				.FirstOrDefaultAsync(ch => ch.Id == id);
+			var entity = await _context.CulturalHeritage.FindAsync(id);
+			if (entity == null) return NotFound();
 
-			if (heritage == null)
-				return NotFound();
-
-			heritage.Name = updated.Name;
-			heritage.Description = updated.Description;
-			heritage.ImageUrl = updated.ImageUrl;
-			heritage.NationalMinorityId = updated.NationalMinorityId;
-
-			_context.CulturalHeritageTopic.RemoveRange(heritage.CulturalHeritageTopics);
-
-			if (updated.CulturalHeritageTopics != null)
-			{
-				foreach (var rel in updated.CulturalHeritageTopics)
-					rel.CulturalHeritageId = id;
-
-				_context.CulturalHeritageTopic.AddRange(updated.CulturalHeritageTopics);
-			}
-
+			_mapper.Map(updateDto, entity);
+			_context.Entry(entity).State = EntityState.Modified;
 			await _context.SaveChangesAsync();
+
 			return NoContent();
 		}
 
-		// DELETE api/culturalheritage/{id}
+		// DELETE: api/CulturalHeritage/5
 		[HttpDelete("{id}")]
+		[Authorize]
 		public async Task<IActionResult> Delete(int id)
 		{
-			var heritage = await _context.CulturalHeritage.FindAsync(id);
-			if (heritage == null)
-				return NotFound();
+			var entity = await _context.CulturalHeritage.FindAsync(id);
+			if (entity == null) return NotFound();
 
-			_context.CulturalHeritage.Remove(heritage);
+			_context.CulturalHeritage.Remove(entity);
 			await _context.SaveChangesAsync();
-
 			return NoContent();
 		}
 	}

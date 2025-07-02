@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using WebAPI.Data.Entities;
 
 namespace WebAPI.Data
@@ -19,6 +20,7 @@ namespace WebAPI.Data
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			// ---- Unique indexes ----
 			modelBuilder.Entity<NationalMinority>()
 				.HasIndex(n => n.Name).IsUnique();
 
@@ -34,6 +36,12 @@ namespace WebAPI.Data
 			modelBuilder.Entity<ApplicationUser>()
 				.HasIndex(u => u.Email).IsUnique();
 
+			// ---- Configure Role property default ----
+			modelBuilder.Entity<ApplicationUser>()
+				.Property(u => u.Role)
+				.HasDefaultValue("User");  // all new users default to "User"
+
+			// ---- Relationships ----
 			modelBuilder.Entity<CulturalHeritage>()
 				.HasOne(ch => ch.NationalMinority)
 				.WithMany(nm => nm.CulturalHeritages)
@@ -61,6 +69,22 @@ namespace WebAPI.Data
 				.HasOne(c => c.ApplicationUser)
 				.WithMany(u => u.Comments)
 				.HasForeignKey(c => c.UserId);
+
+			// ---- Seed an initial Admin user ----
+			modelBuilder.Entity<ApplicationUser>().HasData(
+				new ApplicationUser
+				{
+					Id = 1,                      // pick an unused ID
+					Username = "admin",
+					Email = "admin@example.com",
+					PasswordHash = "admin",                // plain-text for demo
+					FirstName = "System",
+					LastName = "Administrator",
+					Phone = "000-000-0000",
+					DateRegistered = DateTime.UtcNow,
+					Role = "Admin"
+				}
+			);
 		}
 	}
 }

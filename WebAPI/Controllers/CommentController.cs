@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebAPI.Data;
 using WebAPI.Data.Entities;
+using WebAPI.Dtos.Comment;
 
 namespace WebAPI.Controllers
 {
@@ -12,57 +15,69 @@ namespace WebAPI.Controllers
 	public class CommentController : ControllerBase
 	{
 		private readonly HeritageDbContext _context;
-		public CommentController(HeritageDbContext context) => _context = context;
+		private readonly IMapper _mapper;
 
-		[HttpGet("heritage/{heritageId}")]
-		public async Task<IActionResult> GetForHeritage(int heritageId)
+		public CommentController(HeritageDbContext context, IMapper mapper)
 		{
-			var comments = await _context.Comment
+			_context = context;
+			_mapper = mapper;
+		}
+
+		// GET: api/Comment/heritage/5
+		[HttpGet("heritage/{heritageId}")]
+		public async Task<ActionResult<IEnumerable<CommentReadDto>>> GetForHeritage(int heritageId)
+		{
+			var entities = await _context.Comment
 				.Include(c => c.ApplicationUser)
 				.Where(c => c.CulturalHeritageId == heritageId && c.Approved)
 				.ToListAsync();
 
-			return Ok(comments);
+			return Ok(_mapper.Map<IEnumerable<CommentReadDto>>(entities));
 		}
 
+		// POST: api/Comment
 		[HttpPost]
 		[Authorize]
-		public async Task<IActionResult> Post([FromBody] Comment model)
+		public async Task<ActionResult<CommentReadDto>> Create(
+			[FromBody] CommentCreateDto createDto)
 		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-			model.Timestamp = DateTime.UtcNow;
-			model.Approved = false;
+			var entity = _mapper.Map<Comment>(createDto);
+			entity.Timestamp = DateTime.UtcNow;
+			entity.Approved = false;
 
-			_context.Comment.Add(model);
+			_context.Comment.Add(entity);
 			await _context.SaveChangesAsync();
 
-			return Ok(model);
+			var readDto = _mapper.Map<CommentReadDto>(entity);
+			return Ok(readDto);
 		}
 
+		// PUT: api/Comment/5/approve
 		[HttpPut("{id}/approve")]
-		[Authorize]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Approve(int id)
 		{
-			var comment = await _context.Comment.FindAsync(id);
-			if (comment == null) return NotFound();
+			var entity = await _context.Comment.FindAsync(id);
+			if (entity == null) return NotFound();
 
-			comment.Approved = true;
+			entity.Approved = true;
 			await _context.SaveChangesAsync();
-
 			return NoContent();
 		}
 
+		// DELETE: api/Comment/5
 		[HttpDelete("{id}")]
-		[Authorize]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Delete(int id)
 		{
-			var comment = await _context.Comment.FindAsync(id);
-			if (comment == null) return NotFound();
+			var entity = await _context.Comment.FindAsync(id);
+			if (entity == null) return NotFound();
 
-			_context.Comment.Remove(comment);
+			_context.Comment.Remove(entity);
 			await _context.SaveChangesAsync();
-
 			return NoContent();
 		}
 	}

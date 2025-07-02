@@ -1,17 +1,20 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using WebAPI;
 using WebAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1) DbContext
-builder.Services.AddDbContext<HeritageDbContext>(opt =>
-	opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<HeritageDbContext>(opts =>
+	opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2) JSON cycle handling
+// 2) Controllers + JSON options
 builder.Services.AddControllers()
 	.AddJsonOptions(o =>
 	{
@@ -19,13 +22,44 @@ builder.Services.AddControllers()
 		o.JsonSerializerOptions.WriteIndented = true;
 	});
 
-// 3) Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// 3) AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// 4) JWT Auth
-var jwt = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwt["Key"]);
+// 4) Swagger + JWT setup
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+	// Define the BearerAuth scheme that's in use
+	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+	{
+		Description = "JWT Authorization header using the Bearer scheme. " +
+					  "Enter 'Bearer' [space] and then your token.",
+		Name = "Authorization",
+		In = ParameterLocation.Header,
+		Type = SecuritySchemeType.ApiKey,
+		Scheme = "Bearer"
+	});
+
+	// Require the BearerAuth scheme for all endpoints
+	c.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{
+			new OpenApiSecurityScheme
+			{
+				Reference = new OpenApiReference
+				{
+					Id   = "Bearer",
+					Type = ReferenceType.SecurityScheme
+				}
+			},
+			new List<string>()
+		}
+	});
+});
+
+// 5) JWT Authentication
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var keyBytes = Encoding.UTF8.GetBytes(jwtSection["Key"]);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -38,12 +72,16 @@ builder.Services.AddAuthentication(options =>
 	opts.SaveToken = true;
 	opts.TokenValidationParameters = new TokenValidationParameters
 	{
-		ValidateIssuer = true,
-		ValidateAudience = true,
 		ValidateIssuerSigningKey = true,
-		ValidIssuer = jwt["Issuer"],
-		ValidAudience = jwt["Audience"],
-		IssuerSigningKey = new SymmetricSecurityKey(key),
+		IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+
+		ValidateIssuer = true,
+		ValidIssuer = jwtSection["Issuer"],
+
+		ValidateAudience = true,
+		ValidAudience = jwtSection["Audience"],
+
+		ValidateLifetime = true,
 		ClockSkew = TimeSpan.Zero
 	};
 });
@@ -52,7 +90,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// pipeline
+// Middleware
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();

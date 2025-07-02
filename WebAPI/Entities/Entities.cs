@@ -71,7 +71,7 @@ namespace WebAPI.Data.Entities
 		[StringLength(200)]
 		public string Email { get; set; }
 
-		// For demo purposes this is plain‐text.
+		// NOTE: Plain-text for demo; swap for a hash in production.
 		[Required]
 		[StringLength(500)]
 		public string PasswordHash { get; set; }
@@ -88,6 +88,17 @@ namespace WebAPI.Data.Entities
 
 		public DateTime DateRegistered { get; set; }
 
+		/// <summary>
+		/// The user's role. Allowed values: "User", "Admin".
+		/// Defaults to "User" when registering new accounts.
+		/// </summary>
+		[Required]
+		[StringLength(50)]
+		public string Role { get; set; } = "User";
+
+		/// <summary>
+		/// Navigation to the comments this user has posted.
+		/// </summary>
 		public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 	}
 

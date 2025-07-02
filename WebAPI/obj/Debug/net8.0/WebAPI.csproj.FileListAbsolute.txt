@@ -273,3 +273,5 @@ C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\refint\
 C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\WebAPI.pdb
 C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\WebAPI.genruntimeconfig.cache
 C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\ref\WebAPI.dll
+C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebAPI\bin\Debug\net8.0\AutoMapper.dll
+C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebAPI\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
