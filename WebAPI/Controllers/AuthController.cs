@@ -1,13 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿// File: Controllers/AuthController.cs
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.ComponentModel.DataAnnotations;
+using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using WebAPI.Data;
 using WebAPI.Data.Entities;
+using WebAPI.Dtos.Auth;
+
 
 namespace WebAPI.Controllers
 {
@@ -18,39 +26,48 @@ namespace WebAPI.Controllers
 		private readonly HeritageDbContext _context;
 		private readonly IConfiguration _config;
 
-		public AuthController(HeritageDbContext ctx, IConfiguration cfg)
+		public AuthController(HeritageDbContext context, IConfiguration config)
 		{
-			_context = ctx;
-			_config = cfg;
+			_context = context;
+			_config = config;
 		}
 
+		/// <summary>
+		/// Registers a new user with the role "User".
+		/// </summary>
 		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] RegisterRequest model)
+		public async Task<IActionResult> Register([FromBody] Dtos.Auth.RegisterRequest model)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			if (!await _context.Database.CanConnectAsync())
-				return StatusCode(503, "DB unavailable");
-
-			// ensure unique username/email
-			var dup = await _context.ApplicationUser
+			// Check for existing username or email
+			bool exists = await _context.ApplicationUser
 				.AnyAsync(u => u.Username == model.Username || u.Email == model.Email);
-			if (dup)
-				return BadRequest("Username or email already exists.");
+			if (exists)
+				return BadRequest("Username or email already in use.");
 
 			var user = new ApplicationUser
 			{
 				Username = model.Username,
 				Email = model.Email,
-				PasswordHash = model.Password,   // plain-text for demo
+				PasswordHash = model.Password,   // Plain text for demo; hash in production
 				FirstName = model.FirstName,
 				LastName = model.LastName,
 				Phone = model.Phone,
-				DateRegistered = DateTime.UtcNow
+				DateRegistered = DateTime.UtcNow,
+				Role = "User"
 			};
 
 			_context.ApplicationUser.Add(user);
+			await _context.SaveChangesAsync();
+
+			// Optionally log the registration
+			_context.Log.Add(new Log
+			{
+				Level = "Info",
+				Message = $"New user registered with id={user.Id}, username={user.Username}."
+			});
 			await _context.SaveChangesAsync();
 
 			return Ok(new
@@ -58,14 +75,15 @@ namespace WebAPI.Controllers
 				user.Id,
 				user.Username,
 				user.Email,
-				user.FirstName,
-				user.LastName,
-				user.Phone
+				user.Role
 			});
 		}
 
+		/// <summary>
+		/// Authenticates a user and returns a JWT.
+		/// </summary>
 		[HttpPost("login")]
-		public async Task<IActionResult> Login([FromBody] LoginRequest model)
+		public async Task<IActionResult> Login([FromBody] Dtos.Auth.LoginRequest model)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -74,54 +92,78 @@ namespace WebAPI.Controllers
 				.FirstOrDefaultAsync(u =>
 					u.Username == model.Username &&
 					u.PasswordHash == model.Password);
-
 			if (user == null)
-				return Unauthorized("Invalid credentials");
+				return Unauthorized("Invalid credentials.");
 
-			var token = GenerateJwtToken(user);
+			string token = GenerateJwtToken(user);
 			return Ok(new { token });
 		}
 
-		private string GenerateJwtToken(ApplicationUser u)
+		/// <summary>
+		/// Changes the password of the currently authenticated user.
+		/// </summary>
+		[HttpPost("changepassword")]
+		[Authorize]
+		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest model)
 		{
-			var claims = new[]
-			{
-				new Claim(ClaimTypes.NameIdentifier, u.Id.ToString()),
-				new Claim(ClaimTypes.Name, u.Username),
-				new Claim(ClaimTypes.Email, u.Email)
-			};
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-			var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+			// Get userId from JWT
+			string? sid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (sid == null || !int.TryParse(sid, out var userId))
+				return Unauthorized();
+
+			var user = await _context.ApplicationUser.FindAsync(userId);
+			if (user == null)
+				return NotFound("User not found.");
+
+			if (user.PasswordHash != model.OldPassword)
+				return BadRequest("Old password is incorrect.");
+
+			user.PasswordHash = model.NewPassword;
+			await _context.SaveChangesAsync();
+
+			_context.Log.Add(new Log
+			{
+				Level = "Info",
+				Message = $"User with id={user.Id} changed password."
+			});
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		// ===== Helper =====
+
+		/// <summary>
+		/// Generates a JWT for the given user.
+		/// </summary>
+		private string GenerateJwtToken(ApplicationUser user)
+		{
+			var jwtSection = _config.GetSection("Jwt");
+			var keyBytes = Encoding.UTF8.GetBytes(jwtSection["Key"]!);
+
 			var creds = new SigningCredentials(
-				new SymmetricSecurityKey(key),
+				new SymmetricSecurityKey(keyBytes),
 				SecurityAlgorithms.HmacSha256);
 
-			var jwt = new JwtSecurityToken(
-				issuer: _config["Jwt:Issuer"],
-				audience: _config["Jwt:Audience"],
+			var claims = new[]
+			{
+				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+				new Claim(ClaimTypes.Name,           user.Username),
+				new Claim(ClaimTypes.Email,          user.Email),
+				new Claim(ClaimTypes.Role,           user.Role)
+			};
+
+			var token = new JwtSecurityToken(
+				issuer: jwtSection["Issuer"],
+				audience: jwtSection["Audience"],
 				claims: claims,
 				expires: DateTime.UtcNow.AddHours(3),
 				signingCredentials: creds);
 
-			return new JwtSecurityTokenHandler().WriteToken(jwt);
+			return new JwtSecurityTokenHandler().WriteToken(token);
 		}
-	}
-
-	public class RegisterRequest
-	{
-		[Required] public string Username { get; set; }
-		[Required]
-		[EmailAddress]
-		public string Email { get; set; }
-		[Required] public string Password { get; set; }
-		public string FirstName { get; set; }
-		public string LastName { get; set; }
-		public string Phone { get; set; }
-	}
-
-	public class LoginRequest
-	{
-		[Required] public string Username { get; set; }
-		[Required] public string Password { get; set; }
 	}
 }

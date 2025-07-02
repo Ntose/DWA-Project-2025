@@ -5,6 +5,7 @@ using WebAPI.Dtos.NationalMinority;
 using WebAPI.Dtos.Topic;
 using WebAPI.Dtos.CulturalHeritage;
 using WebAPI.Dtos.Comment;
+using WebAPI.Dtos.Log;
 
 namespace WebAPI
 {
@@ -31,7 +32,8 @@ namespace WebAPI
 						src.CulturalHeritageTopics
 						   .Select(ct => ct.Topic)
 						   .ToList()));
-
+			// Log → LogReadDto
+			CreateMap<Log, LogReadDto>();
 			// CreateDto → Entity (ignore bridge collection; we'll handle topics manually in controller if needed)
 			CreateMap<CulturalHeritageCreateDto, CulturalHeritage>()
 				.ForMember(dest => dest.CulturalHeritageTopics, opt => opt.Ignore());

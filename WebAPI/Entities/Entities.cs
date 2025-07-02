@@ -121,4 +121,19 @@ namespace WebAPI.Data.Entities
 		public int UserId { get; set; }
 		public ApplicationUser ApplicationUser { get; set; }
 	}
+	/// <summary>
+	/// Records each CRUD action (and errors if you choose) for auditing.
+	/// </summary>
+	public class Log
+	{
+		public int Id { get; set; }
+
+		public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+		[Required, StringLength(20)]
+		public string Level { get; set; }      // e.g. "Info", "Error"
+
+		[Required]
+		public string Message { get; set; }
+	}
 }
