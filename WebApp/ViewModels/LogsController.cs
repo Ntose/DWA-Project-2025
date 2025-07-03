@@ -22,7 +22,6 @@ public class LogsController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var response = await client.GetAsync("/api/logs");
         if (!response.IsSuccessStatusCode)

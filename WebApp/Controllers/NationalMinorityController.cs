@@ -43,7 +43,6 @@ public class NationalMinorityController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync("/api/nationalminorities");
         var json = await resp.Content.ReadAsStringAsync();
@@ -64,7 +63,6 @@ public class NationalMinorityController : Controller
 
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var json = JsonSerializer.Serialize(vm);
         var resp = await client.PostAsync("/api/nationalminorities",
@@ -82,7 +80,6 @@ public class NationalMinorityController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync($"/api/nationalminorities/{id}");
         if (resp.StatusCode == HttpStatusCode.NotFound)
@@ -106,7 +103,6 @@ public class NationalMinorityController : Controller
 
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var json = JsonSerializer.Serialize(vm);
         var resp = await client.PutAsync($"/api/nationalminorities/{id}",
@@ -124,7 +120,6 @@ public class NationalMinorityController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync($"/api/nationalminorities/{id}");
         if (resp.StatusCode == HttpStatusCode.NotFound)
@@ -143,7 +138,6 @@ public class NationalMinorityController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         await client.DeleteAsync($"/api/nationalminorities/{id}");
         return RedirectToAction(nameof(Manage));

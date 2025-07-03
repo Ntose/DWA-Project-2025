@@ -100,7 +100,6 @@ namespace WebApp.Controllers
 
             var client = _httpFactory.CreateClient("ApiClient");
             var token = await HttpContext.GetTokenAsync("access_token");
-            _authService.AttachToken(client, token);
 
             var payload = JsonSerializer.Serialize(vm);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -119,8 +118,6 @@ namespace WebApp.Controllers
         {
             var client = _httpFactory.CreateClient("ApiClient");
             var token = await HttpContext.GetTokenAsync("access_token");
-            _authService.AttachToken(client, token);
-
             var response = await client.GetAsync($"/api/culturalheritage/{id}");
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return NotFound();
@@ -145,7 +142,6 @@ namespace WebApp.Controllers
 
             var client = _httpFactory.CreateClient("ApiClient");
             var token = await HttpContext.GetTokenAsync("access_token");
-            _authService.AttachToken(client, token);
 
             var payload = JsonSerializer.Serialize(vm);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -164,7 +160,6 @@ namespace WebApp.Controllers
         {
             var client = _httpFactory.CreateClient("ApiClient");
             var token = await HttpContext.GetTokenAsync("access_token");
-            _authService.AttachToken(client, token);
 
             var response = await client.GetAsync($"/api/culturalheritage/{id}");
             if (response.StatusCode == HttpStatusCode.NotFound)
@@ -184,7 +179,6 @@ namespace WebApp.Controllers
         {
             var client = _httpFactory.CreateClient("ApiClient");
             var token = await HttpContext.GetTokenAsync("access_token");
-            _authService.AttachToken(client, token);
 
             await client.DeleteAsync($"/api/culturalheritage/{id}");
             return RedirectToAction(nameof(Index));

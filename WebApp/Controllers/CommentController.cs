@@ -23,7 +23,6 @@ public class CommentController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var response = await client.GetAsync("/api/comments/mine");
         if (!response.IsSuccessStatusCode)
@@ -52,7 +51,6 @@ public class CommentController : Controller
 
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var json = JsonSerializer.Serialize(vm);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -72,7 +70,6 @@ public class CommentController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var response = await client.GetAsync("/api/comments/pending");
         if (!response.IsSuccessStatusCode)
@@ -95,7 +92,6 @@ public class CommentController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         await client.PostAsync($"/api/comments/{id}/approve", null);
         return RedirectToAction(nameof(PendingApproval));
@@ -108,7 +104,6 @@ public class CommentController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         await client.PostAsync($"/api/comments/{id}/reject", null);
         return RedirectToAction(nameof(PendingApproval));

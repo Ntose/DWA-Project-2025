@@ -41,22 +41,18 @@
                 <!-- Links -->
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                        <!-- Home -->
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">
                                 <i class="bi bi-house me-1"></i>Home
                             </a>
                         </li>
 
-                        <!-- Explore Heritage -->
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="CulturalHeritage" asp-action="Index">
                                 <i class="bi bi-compass me-1"></i>Explore Heritage
                             </a>
                         </li>
 
-                        <!-- Categories Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle"
                                href="#"
@@ -79,7 +75,6 @@
                             </ul>
                         </li>
 
-                        @* My Comments (authenticated users) *@
                         @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -89,7 +84,6 @@
                             </li>
                         }
 
-                        @* Admin menu *@
                         @if (HttpContextAccessor.HttpContext.User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">
@@ -183,13 +177,13 @@
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                            <li class="nav-item me-2">
+                                <a href="~/Account/Login" class="btn btn-outline-primary btn-sm rounded-pill d-flex align-items-center px-3 py-1">
                                     <i class="bi bi-box-arrow-in-right me-1"></i>Login
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-primary btn-sm ms-2" asp-controller="Account" asp-action="Register">
+                                <a href="~/Account/Register" class="btn btn-primary btn-sm rounded-pill d-flex align-items-center px-3 py-1">
                                     <i class="bi bi-person-plus me-1"></i>Register
                                 </a>
                             </li>

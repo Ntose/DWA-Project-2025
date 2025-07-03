@@ -2,6 +2,7 @@
 
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f9fa;
 }
 
 .card-text.text-truncate {

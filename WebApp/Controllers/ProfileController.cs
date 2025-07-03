@@ -23,7 +23,6 @@ public class ProfileController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync("/api/profile");
         if (!resp.IsSuccessStatusCode)
@@ -44,7 +43,6 @@ public class ProfileController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync("/api/profile");
         var json = await resp.Content.ReadAsStringAsync();
@@ -63,7 +61,6 @@ public class ProfileController : Controller
 
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var json = JsonSerializer.Serialize(model);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -84,7 +81,6 @@ public class ProfileController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync("/api/profile/favorites");
         if (!resp.IsSuccessStatusCode)

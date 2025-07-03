@@ -1,28 +1,33 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using WebApp.ViewModels;
 
 public class AuthService
 {
-    private readonly IHttpClientFactory _http;
-    public AuthService(IHttpClientFactory http) => _http = http;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public async Task<string> LoginAsync(string user, string pass)
+    public AuthService(IHttpClientFactory httpClientFactory)
     {
-        var client = _http.CreateClient("ApiClient");
-        var json = JsonSerializer.Serialize(new { Username = user, Password = pass });
-        var resp = await client.PostAsync(
-                        "/api/auth/login",
-                        new StringContent(json, Encoding.UTF8, "application/json"));
-
-        if (!resp.IsSuccessStatusCode) return null;
-        using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
-        return doc.RootElement.GetProperty("Token").GetString();
+        _httpClientFactory = httpClientFactory;
     }
 
-    public void AttachToken(HttpClient client, string token)
+    public async Task<TokenResponse?> LoginAsync(string username, LoginVm loginVm)
     {
-        client.DefaultRequestHeaders.Authorization =
-          new AuthenticationHeaderValue("Bearer", token);
+        var client = _httpClientFactory.CreateClient("ApiClient");
+
+        var response = await client.PostAsJsonAsync("api/Auth/login", new
+        {
+            username = loginVm.Username,
+            password = loginVm.Password
+        });
+
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<TokenResponse>();
+        }
+
+        return null;
     }
 }

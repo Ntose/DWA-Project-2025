@@ -44,7 +44,6 @@ public class TopicController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync("/api/topics");
         var json = await resp.Content.ReadAsStringAsync();
@@ -65,7 +64,6 @@ public class TopicController : Controller
 
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var json = JsonSerializer.Serialize(vm);
         var resp = await client.PostAsync("/api/topics",
@@ -83,7 +81,6 @@ public class TopicController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync($"/api/topics/{id}");
         if (resp.StatusCode == HttpStatusCode.NotFound)
@@ -105,7 +102,6 @@ public class TopicController : Controller
 
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var json = JsonSerializer.Serialize(vm);
         var resp = await client.PutAsync($"/api/topics/{id}",
@@ -123,7 +119,6 @@ public class TopicController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         var resp = await client.GetAsync($"/api/topics/{id}");
         if (resp.StatusCode == HttpStatusCode.NotFound)
@@ -142,7 +137,6 @@ public class TopicController : Controller
     {
         var client = _httpFactory.CreateClient("ApiClient");
         var token = await HttpContext.GetTokenAsync("access_token");
-        _authService.AttachToken(client, token);
 
         await client.DeleteAsync($"/api/topics/{id}");
         return RedirectToAction(nameof(Manage));
