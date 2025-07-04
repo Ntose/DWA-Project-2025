@@ -9,12 +9,10 @@ using WebApp.ViewModels;
 public class CommentController : Controller
 {
     private readonly IHttpClientFactory _httpFactory;
-    private readonly AuthService _authService;
 
-    public CommentController(IHttpClientFactory httpFactory, AuthService authService)
+    public CommentController(IHttpClientFactory httpFactory)
     {
         _httpFactory = httpFactory;
-        _authService = authService;
     }
 
     // GET: /Comment/MyComments

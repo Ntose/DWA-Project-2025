@@ -16,12 +16,10 @@ namespace WebApp.Controllers
     public class CulturalHeritageController : Controller
     {
         private readonly IHttpClientFactory _httpFactory;
-        private readonly AuthService _authService;
 
-        public CulturalHeritageController(IHttpClientFactory httpFactory, AuthService authService)
+        public CulturalHeritageController(IHttpClientFactory httpFactory)
         {
             _httpFactory = httpFactory;
-            _authService = authService;
         }
 
         // GET: /CulturalHeritage?page=1&count=10

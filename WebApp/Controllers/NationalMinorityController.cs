@@ -10,12 +10,10 @@ using WebApp.ViewModels;
 public class NationalMinorityController : Controller
 {
     private readonly IHttpClientFactory _httpFactory;
-    private readonly AuthService _authService;
 
-    public NationalMinorityController(IHttpClientFactory httpFactory, AuthService authService)
+    public NationalMinorityController(IHttpClientFactory httpFactory)
     {
         _httpFactory = httpFactory;
-        _authService = authService;
     }
 
     // Public-facing list

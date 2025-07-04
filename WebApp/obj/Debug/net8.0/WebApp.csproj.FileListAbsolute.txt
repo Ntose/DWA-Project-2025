@@ -90,3 +90,4 @@ C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebApp\obj\Debug\net8.0\refint\
 C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebApp\obj\Debug\net8.0\WebApp.pdb
 C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebApp\obj\Debug\net8.0\WebApp.genruntimeconfig.cache
 C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebApp\obj\Debug\net8.0\ref\WebApp.dll
+C:\Users\ninot\Documents\GitHub\DWA-Project-2025\WebApp\bin\Debug\net8.0\Newtonsoft.Json.dll

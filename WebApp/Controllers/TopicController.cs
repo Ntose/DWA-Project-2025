@@ -11,12 +11,10 @@ using WebApp.ViewModels;
 public class TopicController : Controller
 {
     private readonly IHttpClientFactory _httpFactory;
-    private readonly AuthService _authService;
 
-    public TopicController(IHttpClientFactory httpFactory, AuthService authService)
+    public TopicController(IHttpClientFactory httpFactory)
     {
         _httpFactory = httpFactory;
-        _authService = authService;
     }
 
     // Public list: /Topic

@@ -9,12 +9,10 @@ using WebApp.ViewModels;
 public class LogsController : Controller
 {
     private readonly IHttpClientFactory _httpFactory;
-    private readonly AuthService _authService;
 
-    public LogsController(IHttpClientFactory httpFactory, AuthService authService)
+    public LogsController(IHttpClientFactory httpFactory)
     {
         _httpFactory = httpFactory;
-        _authService = authService;
     }
 
     // GET: /Logs

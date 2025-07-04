@@ -10,12 +10,10 @@ using WebApp.ViewModels;
 public class ProfileController : Controller
 {
     private readonly IHttpClientFactory _httpFactory;
-    private readonly AuthService _authService;
 
-    public ProfileController(IHttpClientFactory httpFactory, AuthService authService)
+    public ProfileController(IHttpClientFactory httpFactory)
     {
         _httpFactory = httpFactory;
-        _authService = authService;
     }
 
     // GET: /Profile

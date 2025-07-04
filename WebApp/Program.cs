@@ -3,10 +3,6 @@ using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// (Optional) If you want to force your MVC app to listen on a specific URL,
-// uncomment the next line. Otherwise, rely on launchSettings.json.
-// builder.WebHost.UseUrls("http://localhost:5001");
-
 // 1) Make HttpContext available in Views/Layouts
 builder.Services.AddHttpContextAccessor();
 
@@ -18,10 +14,7 @@ builder.Services.AddHttpClient("ApiClient", client =>
           .Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
-// 3) Your custom service that wraps login/attach-token logic
-builder.Services.AddTransient<AuthService>();
-
-// 4) Configure Cookie Authentication
+// 3) Configure Cookie Authentication (only once!)
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -32,12 +25,12 @@ builder.Services
         options.SlidingExpiration = true;
     });
 
-// 5) Add MVC controllers with views
+// 4) Add MVC controllers with views
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 6) Error handling & HTTPS redirection
+// 5) Error handling & HTTPS redirection
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -52,11 +45,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// 7) Enable auth middleware
+// 6) Enable auth middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 8) Default route: HomeController → Index
+// 7) Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"

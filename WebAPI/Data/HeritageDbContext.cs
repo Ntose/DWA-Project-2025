@@ -10,6 +10,7 @@ namespace WebAPI.Data
 	/// </summary>
 	public class HeritageDbContext : DbContext
 	{
+		public DbSet<CulturalHeritage> CulturalHeritages { get; set; }
 		public HeritageDbContext(DbContextOptions<HeritageDbContext> options)
 			: base(options)
 		{
