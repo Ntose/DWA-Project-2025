@@ -1,38 +1,61 @@
+﻿// File: WebApp/Program.cs
+
+using System;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1) HttpClient for your API
-builder.Services
-    .AddHttpClient("WebAPI", c =>
-    {
-        c.BaseAddress = new Uri(builder.Configuration["WebAPI:BaseUrl"]);
-        c.DefaultRequestHeaders.Accept.Add(
-            new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-    });
+// 0. grab the one URI & guard
+var baseUrl = builder.Configuration.GetValue<string>("WebAPI:BaseUrl");
+if (string.IsNullOrWhiteSpace(baseUrl))
+    throw new InvalidOperationException("Missing WebAPI:BaseUrl in configuration.");
 
-// 2) Cookie auth setup
-builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        // you can set Cookie.Name here if you like
-    });
+if (!baseUrl.EndsWith("/"))
+    baseUrl += "/";
 
+// 1. AuthAPI for /api/auth/*
+builder.Services.AddHttpClient("AuthAPI", client =>
+{
+    client.BaseAddress = new Uri(baseUrl + "auth/");
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+// 2. DataAPI for /api/*
+builder.Services.AddHttpClient("DataAPI", client =>
+{
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+// 3. cookie auth
+builder.Services
+  .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+  .AddCookie(opts =>
+  {
+      opts.LoginPath = "/Account/Login";
+      opts.LogoutPath = "/Account/Logout";
+      opts.AccessDeniedPath = "/Account/AccessDenied";
+  });
+
+// 4. MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
-
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
-// THIS ORDER MATTERS:
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapDefaultControllerRoute();
-
+app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 app.Run();

@@ -1,0 +1,66 @@
+﻿@model WebApp.Models.ManageViewModel
+
+@{
+    ViewData["Title"] = "Manage Profile";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="card p-4 mb-4" style="max-width:600px;">
+    <dl class="row">
+        <dt class="col-sm-3">Username</dt>
+        <dd class="col-sm-9">@Model.Username</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+
+        <dt class="col-sm-3">First Name</dt>
+        <dd class="col-sm-9">@Model.FirstName</dd>
+
+        <dt class="col-sm-3">Last Name</dt>
+        <dd class="col-sm-9">@Model.LastName</dd>
+
+        <dt class="col-sm-3">Phone</dt>
+        <dd class="col-sm-9">@Model.Phone</dd>
+
+        <dt class="col-sm-3">Registered On</dt>
+        <dd class="col-sm-9">@Model.DateRegistered.ToString("g")</dd>
+
+        <dt class="col-sm-3">Role</dt>
+        <dd class="col-sm-9">@Model.Role</dd>
+    </dl>
+
+    <a class="btn btn-secondary" asp-action="ChangePassword">
+        Change Password
+    </a>
+</div>
+
+@if (Model.Comments?.Count > 0)
+{
+    <h3>Your Comments</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Heritage Id</th>
+                <th>Text</th>
+                <th>Date</th>
+                <th>Approved</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model.Comments)
+            {
+                <tr>
+                    <td>@c.CulturalHeritageId</td>
+                    <td>@c.Text</td>
+                    <td>@c.Timestamp.ToString("g")</td>
+                    <td>@(c.Approved ? "Yes" : "No")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>You have not made any comments yet.</p>
+}
