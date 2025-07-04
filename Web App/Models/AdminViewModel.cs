@@ -1,5 +1,4 @@
 ﻿// File: WebApp/Models/AdminViewModel.cs
-
 using System.Collections.Generic;
 
 namespace WebApp.Models

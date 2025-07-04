@@ -1,0 +1,53 @@
+﻿@model WebApp.Models.CulturalHeritageEditViewModel
+@{
+    ViewData["Title"] = "Edit Cultural Heritage";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ImageUrl" class="form-label"></label>
+        <input asp-for="ImageUrl" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NationalMinorityId" class="form-label"></label>
+        <select asp-for="NationalMinorityId"
+                asp-items="@(new SelectList(Model.Minorities,"Id","Name"))"
+                class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Themes</label>
+        @foreach (var t in Model.Topics)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       name="TopicIds" value="@t.Id"
+                @(Model.TopicIds.Contains(t.Id) ? "checked" : "") />
+                <label class="form-check-label">@t.Name</label>
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

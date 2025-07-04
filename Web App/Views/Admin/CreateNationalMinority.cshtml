@@ -1,0 +1,20 @@
+﻿@model WebApp.Models.NationalMinorityViewModel
+
+@{
+    ViewData["Title"] = "New National Minority";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CreateNationalMinority" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save Minority</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
