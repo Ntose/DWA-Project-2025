@@ -14,8 +14,19 @@ namespace WebAPI.Data.Entities
 
 		public ICollection<CulturalHeritage> CulturalHeritages { get; set; } = new List<CulturalHeritage>();
 	}
+    public class AppUser
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Phone { get; set; } = null!;
+        public DateTime DateRegistered { get; set; }
+        public string Role { get; set; } = "User";
+    }
 
-	public class Topic
+    public class Topic
 	{
 		public int Id { get; set; }
 

@@ -82,8 +82,39 @@ namespace WebAPI.Controllers
             return Ok(dto);
         }
 
+        // PUT: api/User/profile
+        // Updates the logged‐in user’s profile info
+        [HttpPut("profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileInput input)
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Forbid();
+
+            var user = await _context.ApplicationUser
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user == null)
+                return NotFound("User not found.");
+
+            user.FirstName = input.FirstName;
+            user.LastName = input.LastName;
+            user.Email = input.Email;
+            user.Phone = input.Phone;
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
 
         #region DTO Definitions
+        public class UpdateProfileInput
+        {
+            public string FirstName { get; set; } = "";
+            public string LastName { get; set; } = "";
+            public string Email { get; set; } = "";
+            public string Phone { get; set; } = "";
+        }
 
         public class UserDto
         {

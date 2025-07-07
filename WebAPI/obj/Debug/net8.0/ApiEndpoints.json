@@ -492,5 +492,21 @@
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.UserController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/User/profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "WebAPI.Controllers.UserController\u002BUpdateProfileInput",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Models;
+using System.Text.Json;
+
 
 namespace WebApp.Controllers
 {
@@ -274,5 +276,43 @@ namespace WebApp.Controllers
             }
             catch { }
         }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile()
+        {
+            using var reader = new StreamReader(Request.Body);
+            var body = await reader.ReadToEndAsync();
+
+            if (string.IsNullOrWhiteSpace(body))
+                return BadRequest("Empty body.");
+
+            JsonDocument json;
+            try
+            {
+                json = JsonDocument.Parse(body);
+            }
+            catch
+            {
+                return BadRequest("Invalid JSON.");
+            }
+
+            var client = _http.CreateClient("DataAPI");
+            AttachBearerToken(client);
+
+            var content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+            var resp = await client.PutAsync("User/profile", content);
+
+            var raw = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                return StatusCode((int)resp.StatusCode, string.IsNullOrWhiteSpace(raw)
+                    ? "Error updating profile."
+                    : raw);
+            }
+
+            return Ok();
+        }
+
     }
 }
