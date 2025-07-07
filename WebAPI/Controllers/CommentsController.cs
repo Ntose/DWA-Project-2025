@@ -15,14 +15,17 @@ namespace WebAPI.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly HeritageDbContext _db;
+
         public CommentsController(HeritageDbContext db) => _db = db;
 
-        // GET: /api/CulturalHeritage/5/Comments
-        // Now explicitly AllowAnonymous so clients need not send any header
+        /// <summary>
+        /// Returns approved comments for a specific cultural heritage item.
+        /// </summary>
+        /// <param name="heritageId">The ID of the cultural heritage item.</param>
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<CommentDto>>> Get(int heritageId)
         {
-            if (!await _db.CulturalHeritages.AnyAsync(h => h.Id == heritageId))
+            if (!await _db.CulturalHeritage.AnyAsync(h => h.Id == heritageId))
                 return NotFound();
 
             var list = await _db.Comments
@@ -42,17 +45,19 @@ namespace WebAPI.Controllers
             return Ok(list);
         }
 
-        // POST: /api/CulturalHeritage/5/Comments
-        // Still requires a valid bearer token
+        /// <summary>
+        /// Submits a new comment for a specific cultural heritage item.
+        /// Requires authentication.
+        /// </summary>
+        /// <param name="heritageId">The ID of the cultural heritage item.</param>
+        /// <param name="input">The comment content.</param>
         [HttpPost, Authorize]
-        public async Task<ActionResult> Post(
-            int heritageId,
-            [FromBody] CommentCreateDto input)
+        public async Task<ActionResult> Post(int heritageId, [FromBody] CommentCreateDto input)
         {
             if (string.IsNullOrWhiteSpace(input.Text))
                 return BadRequest("Comment cannot be empty.");
 
-            if (!await _db.CulturalHeritages.AnyAsync(h => h.Id == heritageId))
+            if (!await _db.CulturalHeritage.AnyAsync(h => h.Id == heritageId))
                 return NotFound();
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
@@ -64,19 +69,18 @@ namespace WebAPI.Controllers
                 CulturalHeritageId = heritageId,
                 Text = input.Text,
                 Timestamp = DateTime.UtcNow,
-                Approved = true,                          // auto-approve
+                Approved = true, // Auto-approve for now
                 UserId = int.Parse(userIdClaim.Value)
             };
 
             _db.Comments.Add(comment);
             await _db.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Get),
-                                   new { heritageId },
-                                   new { comment.Id });
+            return CreatedAtAction(nameof(Get), new { heritageId }, new { comment.Id });
         }
     }
 
+    // DTO for returning comment data
     public class CommentDto
     {
         public int Id { get; set; }
@@ -85,6 +89,7 @@ namespace WebAPI.Controllers
         public string Author { get; set; } = "";
     }
 
+    // DTO for creating a new comment
     public class CommentCreateDto
     {
         public string Text { get; set; } = "";

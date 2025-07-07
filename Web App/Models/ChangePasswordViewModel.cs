@@ -1,5 +1,4 @@
-﻿// File: WebApp/Models/ChangePasswordViewModel.cs
-
+﻿// ViewModel for handling password change requests
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApp.Models

@@ -2,13 +2,13 @@
 
 namespace WebAPI.Dtos.Topic
 {
-	/// <summary>
-	/// Used to receive create/update payload for Topic.
-	/// </summary>
-	public class TopicCreateDto
-	{
-		[Required]
-		[StringLength(100)]
-		public string Name { get; set; }
-	}
+    /// <summary>
+    /// DTO used to receive create or update payload for a Topic.
+    /// </summary>
+    public class TopicCreateDto
+    {
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(100, ErrorMessage = "Name must not exceed 100 characters.")]
+        public string Name { get; set; } = string.Empty;
+    }
 }

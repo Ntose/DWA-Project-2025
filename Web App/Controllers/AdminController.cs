@@ -1,6 +1,4 @@
-﻿// File: WebApp/Controllers/AdminController.cs
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -11,13 +9,13 @@ using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")] // Restrict access to users with the Admin role
     public class AdminController : Controller
     {
         private readonly IHttpClientFactory _http;
         public AdminController(IHttpClientFactory http) => _http = http;
 
-        // GET /Admin or /Admin/Index
+        // GET: /Admin or /Admin/Index
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -25,7 +23,7 @@ namespace WebApp.Controllers
             return View("AdminTerminal", vm);
         }
 
-        // GET /Admin/AdminTerminal
+        // GET: /Admin/AdminTerminal
         [HttpGet]
         public async Task<IActionResult> AdminTerminal()
         {
@@ -33,7 +31,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        // GET /Admin/CreateCulturalHeritage
+        // GET: /Admin/CreateCulturalHeritage
         [HttpGet]
         public async Task<IActionResult> CreateCulturalHeritage()
         {
@@ -43,15 +41,14 @@ namespace WebApp.Controllers
             var minorities = await FetchListAsync<NationalMinorityViewModel>(client, "NationalMinority");
             var topics = await FetchListAsync<TopicViewModel>(client, "Topic");
 
-            var vm = new CulturalHeritageEditViewModel
+            return View(new CulturalHeritageEditViewModel
             {
                 Minorities = minorities,
                 Topics = topics
-            };
-            return View(vm);
+            });
         }
 
-        // POST /Admin/CreateCulturalHeritage
+        // POST: /Admin/CreateCulturalHeritage
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCulturalHeritage(CulturalHeritageEditViewModel vm)
         {
@@ -78,12 +75,12 @@ namespace WebApp.Controllers
             return await ReloadCreateForm(vm, client);
         }
 
-        // GET /Admin/CreateNationalMinority
+        // GET: /Admin/CreateNationalMinority
         [HttpGet]
         public IActionResult CreateNationalMinority() =>
             View(new NationalMinorityViewModel());
 
-        // POST /Admin/CreateNationalMinority
+        // POST: /Admin/CreateNationalMinority
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateNationalMinority(NationalMinorityViewModel vm)
         {
@@ -101,12 +98,12 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        // GET /Admin/CreateTopic
+        // GET: /Admin/CreateTopic
         [HttpGet]
         public IActionResult CreateTopic() =>
             View(new TopicViewModel());
 
-        // POST /Admin/CreateTopic
+        // POST: /Admin/CreateTopic
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTopic(TopicViewModel vm)
         {
@@ -126,18 +123,14 @@ namespace WebApp.Controllers
 
         // ── PRIVATE HELPERS ────────────────────────────────────
 
+        // Builds the main admin dashboard view model
         private async Task<AdminViewModel> BuildAdminViewModel()
         {
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
-            // Fetch users
             var users = await FetchListAsync<UserViewModel>(client, "User");
-
-            // Fetch log count
             var count = await client.GetFromJsonAsync<int>("Logs/count");
-
-            // Fetch recent logs
             var logs = await FetchListAsync<LogViewModel>(client, "Logs/get/50");
 
             return new AdminViewModel
@@ -148,6 +141,7 @@ namespace WebApp.Controllers
             };
         }
 
+        // Generic helper to fetch a list of items from the API
         private async Task<List<T>> FetchListAsync<T>(HttpClient client, string url)
         {
             var resp = await client.GetAsync(url);
@@ -173,6 +167,7 @@ namespace WebApp.Controllers
             ) ?? new List<T>();
         }
 
+        // Reloads the form with fresh dropdown data if submission fails
         private async Task<IActionResult> ReloadCreateForm(
             CulturalHeritageEditViewModel vm,
             HttpClient? client)
@@ -185,12 +180,15 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+        // Adds JWT from user claims to the request header
         private void AttachBearerToken(HttpClient client)
         {
             var jwt = User.FindFirst("JWT")?.Value;
             if (!string.IsNullOrEmpty(jwt))
+            {
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
+            }
         }
     }
 }

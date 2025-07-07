@@ -10,14 +10,18 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ─────────────────────────────────────────────────────────────
 // 0) Read the WebAPI base URL from configuration
+// ─────────────────────────────────────────────────────────────
 var baseUrl = builder.Configuration.GetValue<string>("WebAPI:BaseUrl");
 if (string.IsNullOrWhiteSpace(baseUrl))
     throw new InvalidOperationException("Missing WebAPI:BaseUrl in configuration.");
 if (!baseUrl.EndsWith("/"))
     baseUrl += "/";
 
-// 1) HttpClient for authentication endpoints
+// ─────────────────────────────────────────────────────────────
+// 1) Configure named HttpClient for authentication endpoints
+// ─────────────────────────────────────────────────────────────
 builder.Services.AddHttpClient("AuthAPI", client =>
 {
     client.BaseAddress = new Uri(baseUrl + "auth/");
@@ -25,7 +29,9 @@ builder.Services.AddHttpClient("AuthAPI", client =>
         new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
-// 2) HttpClient for data endpoints
+// ─────────────────────────────────────────────────────────────
+// 2) Configure named HttpClient for general data endpoints
+// ─────────────────────────────────────────────────────────────
 builder.Services.AddHttpClient("DataAPI", client =>
 {
     client.BaseAddress = new Uri(baseUrl);
@@ -33,7 +39,9 @@ builder.Services.AddHttpClient("DataAPI", client =>
         new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
-// 3) Cookie-based authentication
+// ─────────────────────────────────────────────────────────────
+// 3) Enable cookie-based authentication
+// ─────────────────────────────────────────────────────────────
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opts =>
@@ -43,27 +51,32 @@ builder.Services
         opts.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-// 4) Add CORS
+// ─────────────────────────────────────────────────────────────
+// 4) Configure CORS to allow requests from the WebAPI
+// ─────────────────────────────────────────────────────────────
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowWebAPI", policy =>
     {
-        policy.WithOrigins(baseUrl.TrimEnd('/')) // Allow the WebAPI URL
+        policy.WithOrigins(baseUrl.TrimEnd('/'))
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials(); // Allow cookies/auth headers
+              .AllowCredentials(); // Required for cookie auth
     });
 });
 
-// 5) MVC with Views, filtering out any controllers from the WebAPI assembly
+// ─────────────────────────────────────────────────────────────
+// 5) Add MVC with Views, excluding WebAPI controllers
+// ─────────────────────────────────────────────────────────────
 builder.Services
     .AddControllersWithViews()
     .ConfigureApplicationPartManager(apm =>
     {
-        // Remove the WebAPI assembly so its controllers are not loaded
+        // Prevent accidental loading of WebAPI controllers into the WebApp
         var partsToRemove = apm.ApplicationParts
             .Where(part => part.Name.Equals("WebAPI", StringComparison.OrdinalIgnoreCase))
             .ToList();
+
         foreach (var part in partsToRemove)
         {
             apm.ApplicationParts.Remove(part);
@@ -72,7 +85,9 @@ builder.Services
 
 var app = builder.Build();
 
-// 6) Middleware pipeline
+// ─────────────────────────────────────────────────────────────
+// 6) Configure middleware pipeline
+// ─────────────────────────────────────────────────────────────
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -83,13 +98,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Use CORS before authentication
-app.UseCors("AllowWebAPI");
+app.UseCors("AllowWebAPI"); // Must come before auth
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 7) Default route
+// ─────────────────────────────────────────────────────────────
+// 7) Configure default route
+// ─────────────────────────────────────────────────────────────
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"

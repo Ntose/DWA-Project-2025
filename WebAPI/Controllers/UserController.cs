@@ -17,11 +17,13 @@ namespace WebAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly HeritageDbContext _context;
+
         public UserController(HeritageDbContext context)
             => _context = context;
 
-        // GET: api/User
-        // Returns all users (Admin‐only)
+        /// <summary>
+        /// Returns all users (Admin-only).
+        /// </summary>
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<UserDto>>> GetAll()
@@ -40,8 +42,9 @@ namespace WebAPI.Controllers
             return Ok(users);
         }
 
-        // GET: api/User/profile
-        // Returns the logged‐in user’s profile plus their comments
+        /// <summary>
+        /// Returns the logged-in user's profile and their comments.
+        /// </summary>
         [HttpGet("profile")]
         [Authorize]
         public async Task<IActionResult> GetProfile()
@@ -82,8 +85,9 @@ namespace WebAPI.Controllers
             return Ok(dto);
         }
 
-        // PUT: api/User/profile
-        // Updates the logged‐in user’s profile info
+        /// <summary>
+        /// Updates the logged-in user's profile information.
+        /// </summary>
         [HttpPut("profile")]
         [Authorize]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileInput input)
@@ -108,6 +112,7 @@ namespace WebAPI.Controllers
         }
 
         #region DTO Definitions
+
         public class UpdateProfileInput
         {
             public string FirstName { get; set; } = "";

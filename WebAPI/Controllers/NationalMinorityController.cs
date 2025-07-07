@@ -10,84 +10,101 @@ using WebAPI.Dtos.NationalMinority;
 
 namespace WebAPI.Controllers
 {
-	[ApiController]
-	[Route("api/[controller]")]
-	public class NationalMinorityController : ControllerBase
-	{
-		private readonly HeritageDbContext _context;
-		private readonly IMapper _mapper;
+    [ApiController]
+    [Route("api/[controller]")]
+    public class NationalMinorityController : ControllerBase
+    {
+        private readonly HeritageDbContext _context;
+        private readonly IMapper _mapper;
 
-		public NationalMinorityController(HeritageDbContext context, IMapper mapper)
-		{
-			_context = context;
-			_mapper = mapper;
-		}
+        public NationalMinorityController(HeritageDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-		// GET: api/NationalMinority
-		[HttpGet]
-		public async Task<ActionResult<IEnumerable<NationalMinorityReadDto>>> GetAll()
-		{
-			var entities = await _context.NationalMinority.ToListAsync();
-			return Ok(_mapper.Map<IEnumerable<NationalMinorityReadDto>>(entities));
-		}
+        /// <summary>
+        /// Returns all national minorities.
+        /// </summary>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<NationalMinorityReadDto>>> GetAll()
+        {
+            var entities = await _context.NationalMinority.ToListAsync();
+            var dtos = _mapper.Map<IEnumerable<NationalMinorityReadDto>>(entities);
+            return Ok(dtos);
+        }
 
-		// GET: api/NationalMinority/5
-		[HttpGet("{id}")]
-		public async Task<ActionResult<NationalMinorityReadDto>> Get(int id)
-		{
-			var entity = await _context.NationalMinority.FindAsync(id);
-			if (entity == null) return NotFound();
-			return Ok(_mapper.Map<NationalMinorityReadDto>(entity));
-		}
+        /// <summary>
+        /// Returns a specific national minority by ID.
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<NationalMinorityReadDto>> Get(int id)
+        {
+            var entity = await _context.NationalMinority.FindAsync(id);
+            if (entity == null)
+                return NotFound();
 
-		// POST: api/NationalMinority
-		[HttpPost]
-		[Authorize]
-		public async Task<ActionResult<NationalMinorityReadDto>> Create(
-			[FromBody] NationalMinorityCreateDto createDto)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            var dto = _mapper.Map<NationalMinorityReadDto>(entity);
+            return Ok(dto);
+        }
 
-			var entity = _mapper.Map<NationalMinority>(createDto);
-			_context.NationalMinority.Add(entity);
-			await _context.SaveChangesAsync();
+        /// <summary>
+        /// Creates a new national minority.
+        /// </summary>
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult<NationalMinorityReadDto>> Create(
+            [FromBody] NationalMinorityCreateDto createDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			var readDto = _mapper.Map<NationalMinorityReadDto>(entity);
-			return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
-		}
+            var entity = _mapper.Map<NationalMinority>(createDto);
+            _context.NationalMinority.Add(entity);
+            await _context.SaveChangesAsync();
 
-		// PUT: api/NationalMinority/5
-		[HttpPut("{id}")]
-		[Authorize]
-		public async Task<IActionResult> Update(
-			int id,
-			[FromBody] NationalMinorityCreateDto updateDto)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            var readDto = _mapper.Map<NationalMinorityReadDto>(entity);
+            return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
+        }
 
-			var entity = await _context.NationalMinority.FindAsync(id);
-			if (entity == null) return NotFound();
+        /// <summary>
+        /// Updates an existing national minority.
+        /// </summary>
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Update(
+            int id,
+            [FromBody] NationalMinorityCreateDto updateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			_mapper.Map(updateDto, entity);
-			_context.Entry(entity).State = EntityState.Modified;
-			await _context.SaveChangesAsync();
+            var entity = await _context.NationalMinority.FindAsync(id);
+            if (entity == null)
+                return NotFound();
 
-			return NoContent();
-		}
+            _mapper.Map(updateDto, entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-		// DELETE: api/NationalMinority/5
-		[HttpDelete("{id}")]
-		[Authorize]
-		public async Task<IActionResult> Delete(int id)
-		{
-			var entity = await _context.NationalMinority.FindAsync(id);
-			if (entity == null) return NotFound();
+            return NoContent();
+        }
 
-			_context.NationalMinority.Remove(entity);
-			await _context.SaveChangesAsync();
-			return NoContent();
-		}
-	}
+        /// <summary>
+        /// Deletes a national minority by ID.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var entity = await _context.NationalMinority.FindAsync(id);
+            if (entity == null)
+                return NotFound();
+
+            _context.NationalMinority.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+    }
 }

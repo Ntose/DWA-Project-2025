@@ -1,6 +1,4 @@
-﻿// File: WebApp/Controllers/CulturalHeritageController.cs
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,7 +10,7 @@ using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize] // Require authentication for all actions unless overridden
     public class CulturalHeritageController : Controller
     {
         private readonly IHttpClientFactory _http;
@@ -26,6 +24,7 @@ namespace WebApp.Controllers
             AttachBearerToken(client);
 
             List<CulturalHeritageListViewModel> list;
+
             try
             {
                 var resp = await client.GetAsync("CulturalHeritage");
@@ -34,6 +33,8 @@ namespace WebApp.Controllers
 
                 using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
                 var root = UnwrapValues(doc.RootElement);
+
+                // Map JSON to view models
                 list = root.ValueKind == JsonValueKind.Array
                     ? root.EnumerateArray().Select(el => new CulturalHeritageListViewModel
                     {
@@ -60,7 +61,7 @@ namespace WebApp.Controllers
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
-            // 1) Fetch the heritage record
+            // Fetch cultural heritage details
             var resp = await client.GetAsync($"CulturalHeritage/{id}");
             if (!resp.IsSuccessStatusCode)
                 return NotFound();
@@ -81,13 +82,13 @@ namespace WebApp.Controllers
                 };
             }
 
-            // 2) Fetch approved comments using helper
+            // Load associated comments
             vm.Comments = await FetchListAsync<CommentViewModel>(
                 client,
                 $"CulturalHeritage/{id}/Comments"
             );
 
-            // 3) Prepare binder for new comment
+            // Prepare model for new comment submission
             vm.NewComment = new CommentCreateViewModel();
 
             return View(vm);
@@ -112,7 +113,7 @@ namespace WebApp.Controllers
             }
             catch
             {
-                // swallow exception
+                // Ignore errors silently
             }
 
             return RedirectToAction(nameof(Details), new { id });
@@ -125,6 +126,7 @@ namespace WebApp.Controllers
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
+            // Load dropdown data for form
             var vm = new CulturalHeritageEditViewModel
             {
                 Minorities = await FetchListAsync<NationalMinorityViewModel>(client, "NationalMinority"),
@@ -171,18 +173,19 @@ namespace WebApp.Controllers
 
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
             var r = doc.RootElement;
+
             var vm = new CulturalHeritageEditViewModel
             {
                 Id = id,
                 Name = r.GetProperty("name").GetString() ?? "",
                 Description = r.GetProperty("description").GetString() ?? "",
                 ImageUrl = r.GetProperty("imageUrl").GetString() ?? "",
-                NationalMinorityId = r.GetProperty("nationalMinority")
-                                      .GetProperty("id").GetInt32(),
+                NationalMinorityId = r.GetProperty("nationalMinority").GetProperty("id").GetInt32(),
                 TopicIds = ExtractTopicIds(r.GetProperty("topics")),
                 Minorities = await FetchListAsync<NationalMinorityViewModel>(client, "NationalMinority"),
                 Topics = await FetchListAsync<TopicViewModel>(client, "Topic")
             };
+
             return View(vm);
         }
 
@@ -225,6 +228,7 @@ namespace WebApp.Controllers
 
         // ── HELPERS ────────────────────────────────────────────
 
+        // Adds JWT to request headers
         private void AttachBearerToken(HttpClient client)
         {
             var jwt = User.FindFirst("JWT")?.Value;
@@ -233,11 +237,12 @@ namespace WebApp.Controllers
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
         }
 
+        // Handles $values wrapping in JSON responses
         private static JsonElement UnwrapValues(JsonElement el)
-            => el.ValueKind == JsonValueKind.Object
-               && el.TryGetProperty("$values", out var inner)
-               ? inner : el;
+            => el.ValueKind == JsonValueKind.Object && el.TryGetProperty("$values", out var inner)
+                ? inner : el;
 
+        // Extracts topic names from JSON
         private static List<string> ExtractTopics(JsonElement topicsElem)
         {
             var arr = UnwrapValues(topicsElem);
@@ -252,6 +257,7 @@ namespace WebApp.Controllers
                       ).ToList();
         }
 
+        // Extracts topic IDs from JSON
         private static List<int> ExtractTopicIds(JsonElement topicsElem)
         {
             var arr = UnwrapValues(topicsElem);
@@ -265,7 +271,7 @@ namespace WebApp.Controllers
                             : item.GetProperty("id").GetInt32()
                       ).ToList();
         }
-
+        // Fetches a list of items from the API and deserializes them
         private async Task<List<T>> FetchListAsync<T>(HttpClient client, string url)
         {
             var resp = await client.GetAsync(url);
@@ -274,6 +280,7 @@ namespace WebApp.Controllers
 
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
             var arr = UnwrapValues(doc.RootElement);
+
             if (arr.ValueKind != JsonValueKind.Array)
                 return new List<T>();
 
@@ -283,6 +290,7 @@ namespace WebApp.Controllers
             ) ?? new List<T>();
         }
 
+        // Reloads form data (dropdowns) after a failed create/edit submission
         private async Task<IActionResult> ReloadForm(CulturalHeritageEditViewModel vm)
         {
             var client = _http.CreateClient("DataAPI");
@@ -290,6 +298,7 @@ namespace WebApp.Controllers
 
             vm.Minorities = await FetchListAsync<NationalMinorityViewModel>(client, "NationalMinority");
             vm.Topics = await FetchListAsync<TopicViewModel>(client, "Topic");
+
             return View(vm);
         }
     }

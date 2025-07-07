@@ -1,0 +1,5 @@
+C:\Users\Nino\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Nino\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Nino\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Nino\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Nino\Documents\GitHub\DWA-Project-2025\WebAPI\obj\Debug\net8.0\staticwebassets.build.json

@@ -2,19 +2,19 @@
 
 namespace WebAPI.Dtos.Comment
 {
-	/// <summary>
-	/// Used to receive create payload for a new comment.
-	/// Client provides Text, CulturalHeritageId, and UserId.
-	/// </summary>
-	public class CommentCreateDto
-	{
-		[Required]
-		public string Text { get; set; }
+    /// <summary>
+    /// DTO used to receive data for creating a new comment.
+    /// Client must provide Text, CulturalHeritageId, and UserId.
+    /// </summary>
+    public class CommentCreateDto
+    {
+        [Required(ErrorMessage = "Comment text is required.")]
+        public string Text { get; set; } = string.Empty;
 
-		[Required]
-		public int CulturalHeritageId { get; set; }
+        [Required(ErrorMessage = "CulturalHeritageId is required.")]
+        public int CulturalHeritageId { get; set; }
 
-		[Required]
-		public int UserId { get; set; }
-	}
+        [Required(ErrorMessage = "UserId is required.")]
+        public int UserId { get; set; }
+    }
 }

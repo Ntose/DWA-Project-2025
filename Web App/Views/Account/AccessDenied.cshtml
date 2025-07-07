@@ -2,13 +2,13 @@
     ViewData["Title"] = "Access Denied";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2 class="mt-4">@ViewData["Title"]</h2>
 
-<div class="alert alert-danger">
-    You do not have permission to view that page.
+<div class="alert alert-danger mt-3">
+    You do not have permission to view this page.
 </div>
 
-<p>
+<p class="mt-4">
     <a asp-controller="Home"
        asp-action="Index"
        class="btn btn-primary">

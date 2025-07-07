@@ -9,38 +9,44 @@ using WebAPI.Dtos.Log;
 
 namespace WebAPI.Controllers
 {
-	[ApiController]
-	[Route("api/[controller]")]
-	[Authorize]  // require JWT
-	public class LogsController : ControllerBase
-	{
-		private readonly HeritageDbContext _context;
-		private readonly IMapper _mapper;
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize] // Require JWT authentication
+    public class LogsController : ControllerBase
+    {
+        private readonly HeritageDbContext _context;
+        private readonly IMapper _mapper;
 
-		public LogsController(HeritageDbContext context, IMapper mapper)
-		{
-			_context = context;
-			_mapper = mapper;
-		}
+        public LogsController(HeritageDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-		// GET api/Logs/get/10
-		[HttpGet("get/{n}")]
-		public async Task<ActionResult<IEnumerable<LogReadDto>>> GetLast(int n)
-		{
-			var logs = await _context.Log
-				.OrderByDescending(l => l.Timestamp)
-				.Take(n)
-				.ToListAsync();
+        /// <summary>
+        /// Returns the most recent N log entries.
+        /// </summary>
+        /// <param name="n">Number of logs to retrieve.</param>
+        [HttpGet("get/{n}")]
+        public async Task<ActionResult<IEnumerable<LogReadDto>>> GetLast(int n)
+        {
+            var logs = await _context.Log
+                .OrderByDescending(l => l.Timestamp)
+                .Take(n)
+                .ToListAsync();
 
-			return Ok(_mapper.Map<IEnumerable<LogReadDto>>(logs));
-		}
+            var dtos = _mapper.Map<IEnumerable<LogReadDto>>(logs);
+            return Ok(dtos);
+        }
 
-		// GET api/Logs/count
-		[HttpGet("count")]
-		public async Task<ActionResult<int>> Count()
-		{
-			var total = await _context.Log.CountAsync();
-			return Ok(total);
-		}
-	}
+        /// <summary>
+        /// Returns the total number of log entries.
+        /// </summary>
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> Count()
+        {
+            var total = await _context.Log.CountAsync();
+            return Ok(total);
+        }
+    }
 }

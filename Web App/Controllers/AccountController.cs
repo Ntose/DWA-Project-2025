@@ -1,12 +1,11 @@
-﻿// File: WebApp/Controllers/AccountController.cs
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -14,9 +13,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Models;
-using System.Text.Json;
-using System.Text;
-
 
 namespace WebApp.Controllers
 {
@@ -25,12 +21,10 @@ namespace WebApp.Controllers
         private readonly IHttpClientFactory _http;
         public AccountController(IHttpClientFactory http) => _http = http;
 
-        // GET: /Account/Login
         [HttpGet, AllowAnonymous]
         public IActionResult Login(string returnUrl = null) =>
             View(new LoginViewModel { ReturnUrl = returnUrl });
 
-        // POST: /Account/Login
         [HttpPost, AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel vm)
@@ -38,40 +32,32 @@ namespace WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            // 1) Authenticate and get JWT
             var authClient = _http.CreateClient("AuthAPI");
-            var authResp = await authClient.PostAsJsonAsync("login", new
-            {
-                vm.Username,
-                vm.Password
-            });
-
+            var authResp = await authClient.PostAsJsonAsync("login", new { vm.Username, vm.Password });
             var authRaw = await authResp.Content.ReadAsStringAsync();
+
             if (!authResp.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty,
-                    $"Login failed {(int)authResp.StatusCode}: {authRaw}");
+                ModelState.AddModelError(string.Empty, $"Login failed {(int)authResp.StatusCode}: {authRaw}");
                 return View(vm);
             }
 
             var authData = JsonSerializer.Deserialize<Dictionary<string, string>>(authRaw,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
             if (authData == null || !authData.TryGetValue("token", out var jwt))
             {
                 ModelState.AddModelError(string.Empty, "Invalid login response.");
                 return View(vm);
             }
 
-            // 2) Retrieve user profile with the JWT
             var dataClient = _http.CreateClient("DataAPI");
-            dataClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", jwt);
+            dataClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
             var profileResp = await dataClient.GetAsync("User/profile");
             if (!profileResp.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty,
-                    $"Failed to load profile: {profileResp.StatusCode}");
+                ModelState.AddModelError(string.Empty, $"Failed to load profile: {profileResp.StatusCode}");
                 return View(vm);
             }
 
@@ -79,49 +65,38 @@ namespace WebApp.Controllers
             using var doc = JsonDocument.Parse(profileRaw);
             var root = doc.RootElement;
 
-            // Extract required fields
             var userId = root.GetProperty("id").GetInt32().ToString();
             var username = root.GetProperty("username").GetString() ?? vm.Username;
             var role = root.GetProperty("role").GetString() ?? "User";
 
-            // 3) Build claims including Role
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Name,           username),
-                new Claim(ClaimTypes.Role,           role),
-                new Claim("JWT",                     jwt)
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Role, role),
+                new Claim("JWT", jwt)
             };
 
-            var identity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(identity),
-                new AuthenticationProperties { IsPersistent = vm.RememberMe }
-            );
+                new AuthenticationProperties { IsPersistent = vm.RememberMe });
 
-            // 4) Redirect
             if (string.IsNullOrEmpty(vm.ReturnUrl) || !Url.IsLocalUrl(vm.ReturnUrl))
                 return RedirectToAction("Index", "Home");
 
             return LocalRedirect(vm.ReturnUrl);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult AccessDenied()
-        {
-            // returns Views/Account/AccessDenied.cshtml
-            return View();
-        }
-        // GET: /Account/Register
+        [HttpGet, AllowAnonymous]
+        public IActionResult AccessDenied() => View();
+
         [HttpGet, AllowAnonymous]
         public IActionResult Register(string returnUrl = null) =>
             View(new RegisterViewModel { ReturnUrl = returnUrl });
 
-        // POST: /Account/Register
         [HttpPost, AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel vm)
@@ -145,15 +120,13 @@ namespace WebApp.Controllers
             if (!resp.IsSuccessStatusCode)
             {
                 TryAddJsonErrors(raw);
-                ModelState.AddModelError(string.Empty,
-                    $"Registration failed {(int)resp.StatusCode}: {raw}");
+                ModelState.AddModelError(string.Empty, $"Registration failed {(int)resp.StatusCode}: {raw}");
                 return View(vm);
             }
 
             return RedirectToAction("Login", new { returnUrl = vm.ReturnUrl });
         }
 
-        // POST: /Account/Logout
         [HttpPost, Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -162,7 +135,6 @@ namespace WebApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Account/Manage
         [HttpGet, Authorize]
         public async Task<IActionResult> Manage()
         {
@@ -178,16 +150,14 @@ namespace WebApp.Controllers
 
             if (!resp.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty,
-                    $"Error {(int)resp.StatusCode}: {resp.ReasonPhrase}");
+                ModelState.AddModelError(string.Empty, $"Error {(int)resp.StatusCode}: {resp.ReasonPhrase}");
                 return View(new ManageViewModel());
             }
 
-            // manual parse for comments
             using var doc = JsonDocument.Parse(raw);
             var root = doc.RootElement;
 
-            var vm2 = new ManageViewModel
+            var vm = new ManageViewModel
             {
                 Username = root.GetProperty("username").GetString(),
                 Email = root.GetProperty("email").GetString(),
@@ -201,23 +171,18 @@ namespace WebApp.Controllers
             if (root.TryGetProperty("comments", out var cObj) &&
                 cObj.TryGetProperty("$values", out var arr))
             {
-            vm2.Comments =
-            JsonSerializer.Deserialize<List<ManageCommentViewModel>>(
-                arr.GetRawText(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-     )!;
-
+                vm.Comments = JsonSerializer.Deserialize<List<ManageCommentViewModel>>(
+                    arr.GetRawText(),
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             }
 
-            return View(vm2);
+            return View(vm);
         }
 
-        // GET: /Account/ChangePassword
         [HttpGet, Authorize]
         public IActionResult ChangePassword() =>
             View(new ChangePasswordViewModel());
 
-        // POST: /Account/ChangePassword
         [HttpPost, Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel vm)
@@ -239,65 +204,27 @@ namespace WebApp.Controllers
             {
                 TryAddJsonErrors(raw);
                 ModelState.AddModelError(string.Empty,
-                    !string.IsNullOrWhiteSpace(raw)
-                        ? raw
-                        : $"Error {(int)resp.StatusCode}: {resp.ReasonPhrase}");
+                    !string.IsNullOrWhiteSpace(raw) ? raw : $"Error {(int)resp.StatusCode}: {resp.ReasonPhrase}");
                 return View(vm);
             }
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            TempData["PasswordChanged"] =
-                "Your password has been changed. Please log in again.";
+            TempData["PasswordChanged"] = "Your password has been changed. Please log in again.";
             return RedirectToAction("Login");
         }
 
-        // attach JWT from cookie
-        private void AttachBearerToken(HttpClient client)
-        {
-            var jwt = User.FindFirst("JWT")?.Value;
-            if (!string.IsNullOrEmpty(jwt))
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", jwt);
-        }
-
-        // surfacing API validation errors
-        private void TryAddJsonErrors(string rawJson)
-        {
-            if (string.IsNullOrWhiteSpace(rawJson) ||
-                !rawJson.TrimStart().StartsWith("{")) return;
-
-            try
-            {
-                var details = JsonSerializer.Deserialize<ValidationProblemDetails>(
-                    rawJson,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (details?.Errors != null)
-                    foreach (var kv in details.Errors)
-                        foreach (var err in kv.Value)
-                            ModelState.AddModelError(kv.Key, err);
-            }
-            catch { }
-        }
-        [HttpGet]
-        [Authorize]
+        [HttpGet, Authorize]
         public async Task<IActionResult> GetApiToken()
         {
             try
             {
-                // Get the authenticated user's username from the cookie
                 var username = User.Identity.Name;
 
-                // Prepare login payload for API
-                var loginPayload = new
-                {
-                    username = username,
-                    // You might need to handle password differently based on your setup
-                    // This is a simplified example - you may need to adjust based on your auth flow
-                };
+                var loginPayload = new { username };
 
-                // Use your existing HttpClient to call the API auth endpoint
-                var httpClientFactory = HttpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
-                var client = httpClientFactory.CreateClient("AuthAPI");
+                var client = HttpContext.RequestServices
+                    .GetRequiredService<IHttpClientFactory>()
+                    .CreateClient("AuthAPI");
 
                 var json = JsonSerializer.Serialize(loginPayload);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -308,13 +235,10 @@ namespace WebApp.Controllers
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
                     var tokenData = JsonSerializer.Deserialize<TokenResponse>(responseContent);
+                    return Ok(new { token = tokenData?.Token });
+                }
 
-                    return Ok(new { token = tokenData.Token });
-                }
-                else
-                {
-                    return BadRequest(new { message = "Failed to get API token" });
-                }
+                return BadRequest(new { message = "Failed to get API token" });
             }
             catch (Exception ex)
             {
@@ -322,14 +246,7 @@ namespace WebApp.Controllers
             }
         }
 
-        // Add this class for token response
-        public class TokenResponse
-        {
-            public string Token { get; set; }
-            public DateTime Expiration { get; set; }
-        }
-        [HttpPost]
-        [Authorize]
+        [HttpPost, Authorize]
         public async Task<IActionResult> UpdateProfile()
         {
             using var reader = new StreamReader(Request.Body);
@@ -351,7 +268,7 @@ namespace WebApp.Controllers
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
-            var content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+            var content = new StringContent(body, Encoding.UTF8, "application/json");
             var resp = await client.PutAsync("User/profile", content);
 
             var raw = await resp.Content.ReadAsStringAsync();
@@ -366,5 +283,50 @@ namespace WebApp.Controllers
             return Ok();
         }
 
+        private void AttachBearerToken(HttpClient client)
+        {
+            var jwt = User.FindFirst("JWT")?.Value;
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", jwt);
+            }
+        }
+
+        private void TryAddJsonErrors(string rawJson)
+        {
+            if (string.IsNullOrWhiteSpace(rawJson) ||
+                !rawJson.TrimStart().StartsWith("{"))
+                return;
+
+            try
+            {
+                var details = JsonSerializer.Deserialize<ValidationProblemDetails>(
+                    rawJson,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (details?.Errors != null)
+                {
+                    foreach (var kv in details.Errors)
+                    {
+                        foreach (var err in kv.Value)
+                        {
+                            ModelState.AddModelError(kv.Key, err);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore JSON parsing errors
+            }
+        }
+
+        public class TokenResponse
+        {
+            public string Token { get; set; }
+            public DateTime Expiration { get; set; }
+        }
     }
 }
+            
