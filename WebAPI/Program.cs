@@ -1,5 +1,4 @@
 ﻿// File: WebAPI/Program.cs
-
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -29,12 +28,23 @@ builder.Services.AddControllers()
 // 3) AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// 4) Swagger + JWT setup
+// 4) Add CORS - Allow requests from the web app
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5044") // Your web app URL
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials(); // Allow cookies/auth headers if needed
+    });
+});
+
+// 5) Swagger + JWT setup
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Heritage API", Version = "v1" });
-
     // define the BearerAuth scheme
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -45,7 +55,6 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         [new OpenApiSecurityScheme
@@ -60,10 +69,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 5) JWT Bearer Authentication
+// 6) JWT Bearer Authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var keyBytes = Encoding.UTF8.GetBytes(jwtSection["Key"]!);
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,13 +85,10 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-
         ValidateIssuer = true,
         ValidIssuer = jwtSection["Issuer"],
-
         ValidateAudience = true,
         ValidAudience = jwtSection["Audience"],
-
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
@@ -93,7 +98,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// 6) Middleware pipeline
+// 7) Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -102,6 +107,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Use CORS before authentication
+app.UseCors("AllowWebApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

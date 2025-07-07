@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Models;
 using System.Text.Json;
+using System.Text;
 
 
 namespace WebApp.Controllers
@@ -107,6 +108,7 @@ namespace WebApp.Controllers
 
             return LocalRedirect(vm.ReturnUrl);
         }
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult AccessDenied()
@@ -275,6 +277,56 @@ namespace WebApp.Controllers
                             ModelState.AddModelError(kv.Key, err);
             }
             catch { }
+        }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetApiToken()
+        {
+            try
+            {
+                // Get the authenticated user's username from the cookie
+                var username = User.Identity.Name;
+
+                // Prepare login payload for API
+                var loginPayload = new
+                {
+                    username = username,
+                    // You might need to handle password differently based on your setup
+                    // This is a simplified example - you may need to adjust based on your auth flow
+                };
+
+                // Use your existing HttpClient to call the API auth endpoint
+                var httpClientFactory = HttpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
+                var client = httpClientFactory.CreateClient("AuthAPI");
+
+                var json = JsonSerializer.Serialize(loginPayload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("login", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var tokenData = JsonSerializer.Deserialize<TokenResponse>(responseContent);
+
+                    return Ok(new { token = tokenData.Token });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Failed to get API token" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred: " + ex.Message });
+            }
+        }
+
+        // Add this class for token response
+        public class TokenResponse
+        {
+            public string Token { get; set; }
+            public DateTime Expiration { get; set; }
         }
         [HttpPost]
         [Authorize]

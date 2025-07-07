@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\views\\culturalheritage\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\views\\culturalheritage\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\data\\heritagedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\data\\heritagedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\views\\culturalheritage\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\views\\culturalheritage\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\views\\account\\manage.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -23,6 +19,26 @@
       "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\data\\heritagedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\data\\heritagedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\entities\\entities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\models\\manageviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\models\\manageviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -31,16 +47,8 @@
       "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\models\\managecommentviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{299E05FB-6929-4B1F-AF46-D8DB1376BCF8}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\models\\userviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\models\\userviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\views\\culturalheritage\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|solutionrelative:web app\\views\\culturalheritage\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{3AF894F2-5B0E-44BC-AB64-47022911C895}|Web App\\Web App.csproj|c:\\users\\ninot\\documents\\github\\dwa-project-2025\\web app\\controllers\\culturalheritagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -74,21 +82,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 362,
-          "SelectedChildIndex": 17,
+          "SelectedChildIndex": 3,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "HeritageDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Data\\HeritageDbContext.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Data\\HeritageDbContext.cs",
-              "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Data\\HeritageDbContext.cs",
-              "RelativeToolTip": "WebAPI\\Data\\HeritageDbContext.cs",
-              "ViewState": "AgIAAFcAAAAAAAAAAAAQwHMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T18:48:25.132Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
@@ -103,7 +98,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Views\\CulturalHeritage\\Index.cshtml",
+              "RelativeDocumentMoniker": "Web App\\Views\\CulturalHeritage\\Index.cshtml",
+              "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Views\\CulturalHeritage\\Index.cshtml*",
+              "RelativeToolTip": "Web App\\Views\\CulturalHeritage\\Index.cshtml*",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAQwGQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-07-07T20:27:59.391Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Program.cs",
+              "RelativeDocumentMoniker": "Web App\\Program.cs",
+              "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Program.cs",
+              "RelativeToolTip": "Web App\\Program.cs",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAswGEAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-07T19:31:51.83Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "HeritageDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Data\\HeritageDbContext.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Data\\HeritageDbContext.cs",
+              "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Data\\HeritageDbContext.cs",
+              "RelativeToolTip": "WebAPI\\Data\\HeritageDbContext.cs",
+              "ViewState": "AgIAAFcAAAAAAAAAAAAQwHMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-07T18:48:25.132Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "Entities.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Entities\\Entities.cs",
               "RelativeDocumentMoniker": "WebAPI\\Entities\\Entities.cs",
@@ -111,38 +143,35 @@
               "RelativeToolTip": "WebAPI\\Entities\\Entities.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAgwBoAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T18:47:38.608Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T18:47:38.608Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Program.cs",
               "RelativeDocumentMoniker": "WebAPI\\Program.cs",
               "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Program.cs",
               "RelativeToolTip": "WebAPI\\Program.cs",
-              "ViewState": "AgIAAEwAAAAAAAAAAAAswFgAAAAGAAAAAAAAAA==",
+              "ViewState": "AgIAAF0AAAAAAAAAAAAswHYAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T18:10:01.75Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T18:10:01.75Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "AccountController.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Controllers\\AccountController.cs",
               "RelativeDocumentMoniker": "Web App\\Controllers\\AccountController.cs",
               "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Controllers\\AccountController.cs",
               "RelativeToolTip": "Web App\\Controllers\\AccountController.cs",
-              "ViewState": "AgIAAAsBAAAAAAAAAAAwwDsBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADgBAAAAAAAAAAAQwD4BAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T11:08:45.206Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T11:08:45.206Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 10,
               "Title": "ManageCommentViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Models\\ManageCommentViewModel.cs",
               "RelativeDocumentMoniker": "Web App\\Models\\ManageCommentViewModel.cs",
@@ -150,12 +179,11 @@
               "RelativeToolTip": "Web App\\Models\\ManageCommentViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T11:07:19.512Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T11:07:19.512Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 9,
               "Title": "ManageViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Models\\ManageViewModel.cs",
               "RelativeDocumentMoniker": "Web App\\Models\\ManageViewModel.cs",
@@ -163,25 +191,23 @@
               "RelativeToolTip": "Web App\\Models\\ManageViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T11:06:39.918Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T11:06:39.918Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Manage.cshtml",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Views\\Account\\Manage.cshtml",
               "RelativeDocumentMoniker": "Web App\\Views\\Account\\Manage.cshtml",
               "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Views\\Account\\Manage.cshtml",
               "RelativeToolTip": "Web App\\Views\\Account\\Manage.cshtml",
-              "ViewState": "AgIAAHcAAAAAAAAAAAAswIcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAIMAAAAAAAAAAAAswJMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-07-07T11:01:38.817Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T11:01:38.817Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "CulturalHeritageController.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Controllers\\CulturalHeritageController.cs",
               "RelativeDocumentMoniker": "Web App\\Controllers\\CulturalHeritageController.cs",
@@ -193,7 +219,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 13,
               "Title": "CommentsController.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Controllers\\CommentsController.cs",
               "RelativeDocumentMoniker": "WebAPI\\Controllers\\CommentsController.cs",
@@ -201,12 +227,11 @@
               "RelativeToolTip": "WebAPI\\Controllers\\CommentsController.cs",
               "ViewState": "AgIAABYAAAAAAAAAAIA9wCUAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T10:45:57.649Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T10:45:57.649Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 14,
               "Title": "site.css",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\wwwroot\\css\\site.css",
               "RelativeDocumentMoniker": "Web App\\wwwroot\\css\\site.css",
@@ -218,19 +243,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 1,
               "Title": "Details.cshtml",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Views\\CulturalHeritage\\Details.cshtml",
               "RelativeDocumentMoniker": "Web App\\Views\\CulturalHeritage\\Details.cshtml",
               "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Views\\CulturalHeritage\\Details.cshtml",
               "RelativeToolTip": "Web App\\Views\\CulturalHeritage\\Details.cshtml",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAwwBgAAAApAAAAAAAAAA==",
+              "ViewState": "AgIAAFkAAACwzMzMzMwAwHIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-07-07T10:35:22.734Z"
+              "WhenOpened": "2025-07-07T10:35:22.734Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 15,
               "Title": "AdminController.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Controllers\\AdminController.cs",
               "RelativeDocumentMoniker": "Web App\\Controllers\\AdminController.cs",
@@ -242,7 +268,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 16,
               "Title": "LogViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Models\\LogViewModel.cs",
               "RelativeDocumentMoniker": "Web App\\Models\\LogViewModel.cs",
@@ -254,7 +280,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "UserViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Models\\UserViewModel.cs",
               "RelativeDocumentMoniker": "Web App\\Models\\UserViewModel.cs",
@@ -262,25 +288,23 @@
               "RelativeToolTip": "Web App\\Models\\UserViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T10:04:11.913Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T10:04:11.913Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "WebAPI\\Controllers\\UserController.cs",
               "ToolTip": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\WebAPI\\Controllers\\UserController.cs",
               "RelativeToolTip": "WebAPI\\Controllers\\UserController.cs",
-              "ViewState": "AgIAAGEAAAAAAAAAAAAlwHUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAIwFcAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T10:03:43.166Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-07T10:03:43.166Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 17,
               "Title": "AdminTerminal.cshtml",
               "DocumentMoniker": "C:\\Users\\ninot\\Documents\\GitHub\\DWA-Project-2025\\Web App\\Views\\Admin\\AdminTerminal.cshtml",
               "RelativeDocumentMoniker": "Web App\\Views\\Admin\\AdminTerminal.cshtml",

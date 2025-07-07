@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Manage Profile";
+    // Pull JWT from user claims
+    var jwt = User.FindFirst("JWT")?.Value ?? "";
 }
 
 <h2 class="mb-4">@ViewData["Title"]</h2>
@@ -97,8 +99,11 @@ else
 }
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(function () {
+            const apiJwt = '@jwt';
+
             $("#profileForm").submit(function (e) {
                 e.preventDefault();
 
@@ -109,22 +114,29 @@ else
                     phone: $("#Phone").val()
                 };
 
+                $("#profileStatus")
+                    .removeClass("text-success text-danger")
+                    .addClass("text-muted")
+                    .text("Updating…");
+
                 $.ajax({
-                    url: '@Url.Action("UpdateProfile", "Account")',
-                    type: 'POST',
+                    url: 'https://localhost:5001/api/User/profile',
+                    type: 'PUT',
                     contentType: 'application/json',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiJwt
+                    },
                     data: JSON.stringify(payload),
                     success: function () {
                         $("#profileStatus")
-                            .removeClass("text-danger")
+                            .removeClass("text-muted text-danger")
                             .addClass("text-success")
                             .text("Profile updated!");
                     },
                     error: function (xhr) {
-                        let msg = "An error occurred.";
-                        if (xhr.responseText) msg = xhr.responseText;
+                        let msg = xhr.responseText || xhr.statusText;
                         $("#profileStatus")
-                            .removeClass("text-success")
+                            .removeClass("text-muted text-success")
                             .addClass("text-danger")
                             .text("Error: " + msg);
                     }

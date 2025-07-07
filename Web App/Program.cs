@@ -1,5 +1,4 @@
 ﻿// File: WebApp/Program.cs
-
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -15,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 var baseUrl = builder.Configuration.GetValue<string>("WebAPI:BaseUrl");
 if (string.IsNullOrWhiteSpace(baseUrl))
     throw new InvalidOperationException("Missing WebAPI:BaseUrl in configuration.");
-
 if (!baseUrl.EndsWith("/"))
     baseUrl += "/";
 
@@ -45,7 +43,19 @@ builder.Services
         opts.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-// 4) MVC with Views, filtering out any controllers from the WebAPI assembly
+// 4) Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebAPI", policy =>
+    {
+        policy.WithOrigins(baseUrl.TrimEnd('/')) // Allow the WebAPI URL
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials(); // Allow cookies/auth headers
+    });
+});
+
+// 5) MVC with Views, filtering out any controllers from the WebAPI assembly
 builder.Services
     .AddControllersWithViews()
     .ConfigureApplicationPartManager(apm =>
@@ -62,7 +72,7 @@ builder.Services
 
 var app = builder.Build();
 
-// 5) Middleware pipeline
+// 6) Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -71,13 +81,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
+
+// Use CORS before authentication
+app.UseCors("AllowWebAPI");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 6) Default route
+// 7) Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"
