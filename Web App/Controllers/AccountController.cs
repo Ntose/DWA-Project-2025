@@ -197,10 +197,12 @@ namespace WebApp.Controllers
             if (root.TryGetProperty("comments", out var cObj) &&
                 cObj.TryGetProperty("$values", out var arr))
             {
-                vm2.Comments = JsonSerializer.Deserialize<List<CommentViewModel>>(
-                    arr.GetRawText(),
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                );
+            vm2.Comments =
+            JsonSerializer.Deserialize<List<ManageCommentViewModel>>(
+                arr.GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+     )!;
+
             }
 
             return View(vm2);

@@ -35,12 +35,13 @@
     </a>
 </div>
 
-@if (Model.Comments?.Count > 0)
+@if (Model.Comments.Count > 0)
 {
     <h3>Your Comments</h3>
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Comment Id</th>
                 <th>Heritage Id</th>
                 <th>Text</th>
                 <th>Date</th>
@@ -52,8 +53,10 @@
             {
                 <tr>
                     <td>@c.Id</td>
+                    <td>@c.CulturalHeritageId</td>
                     <td>@c.Text</td>
                     <td>@c.Timestamp.ToString("g")</td>
+                    <td>@(c.Approved ? "Yes" : "No")</td>
                 </tr>
             }
         </tbody>

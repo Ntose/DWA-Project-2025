@@ -18,15 +18,16 @@ namespace WebAPI.Controllers
         public CommentsController(HeritageDbContext db) => _db = db;
 
         // GET: /api/CulturalHeritage/5/Comments
-        [HttpGet]
+        // Now explicitly AllowAnonymous so clients need not send any header
+        [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<CommentDto>>> Get(int heritageId)
         {
             if (!await _db.CulturalHeritages.AnyAsync(h => h.Id == heritageId))
                 return NotFound();
 
-            var comments = await _db.Comments
+            var list = await _db.Comments
                 .AsNoTracking()
-                .Where(c => c.CulturalHeritageId == heritageId /* you can re-enable "&& c.Approved" later */)
+                .Where(c => c.CulturalHeritageId == heritageId && c.Approved)
                 .Include(c => c.ApplicationUser)
                 .OrderBy(c => c.Timestamp)
                 .Select(c => new CommentDto
@@ -38,10 +39,11 @@ namespace WebAPI.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(comments);
+            return Ok(list);
         }
 
         // POST: /api/CulturalHeritage/5/Comments
+        // Still requires a valid bearer token
         [HttpPost, Authorize]
         public async Task<ActionResult> Post(
             int heritageId,
@@ -62,18 +64,19 @@ namespace WebAPI.Controllers
                 CulturalHeritageId = heritageId,
                 Text = input.Text,
                 Timestamp = DateTime.UtcNow,
-                Approved = true,               // ← approve immediately
+                Approved = true,                          // auto-approve
                 UserId = int.Parse(userIdClaim.Value)
             };
 
             _db.Comments.Add(comment);
             await _db.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Get), new { heritageId }, new { comment.Id });
+            return CreatedAtAction(nameof(Get),
+                                   new { heritageId },
+                                   new { comment.Id });
         }
     }
 
-    // DTOs
     public class CommentDto
     {
         public int Id { get; set; }

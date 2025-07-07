@@ -1,6 +1,5 @@
 ﻿// File: WebApp/Controllers/CulturalHeritageController.cs
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -61,15 +60,15 @@ namespace WebApp.Controllers
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
+            // 1) Fetch the heritage record
+            var resp = await client.GetAsync($"CulturalHeritage/{id}");
+            if (!resp.IsSuccessStatusCode)
+                return NotFound();
+
             CulturalHeritageDetailsViewModel vm;
-            try
+            using (var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync()))
             {
-                var resp = await client.GetAsync($"CulturalHeritage/{id}");
-                if (!resp.IsSuccessStatusCode) return NotFound();
-
-                using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
                 var r = doc.RootElement;
-
                 vm = new CulturalHeritageDetailsViewModel
                 {
                     Id = r.GetProperty("id").GetInt32(),
@@ -81,24 +80,16 @@ namespace WebApp.Controllers
                     Themes = ExtractTopics(r.GetProperty("topics"))
                 };
             }
-            catch
-            {
-                return NotFound();
-            }
 
-            try
-            {
-                var cResp = await client.GetAsync($"CulturalHeritage/{id}/Comments");
-                if (cResp.IsSuccessStatusCode)
-                    vm.Comments = await cResp.Content.ReadFromJsonAsync<List<CommentViewModel>>()
-                                  ?? new List<CommentViewModel>();
-            }
-            catch
-            {
-                vm.Comments = new List<CommentViewModel>();
-            }
+            // 2) Fetch approved comments using helper
+            vm.Comments = await FetchListAsync<CommentViewModel>(
+                client,
+                $"CulturalHeritage/{id}/Comments"
+            );
 
+            // 3) Prepare binder for new comment
             vm.NewComment = new CommentCreateViewModel();
+
             return View(vm);
         }
 
@@ -119,7 +110,10 @@ namespace WebApp.Controllers
                     new { Text = newComment.Text }
                 );
             }
-            catch { /* swallow */ }
+            catch
+            {
+                // swallow exception
+            }
 
             return RedirectToAction(nameof(Details), new { id });
         }
@@ -177,7 +171,6 @@ namespace WebApp.Controllers
 
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
             var r = doc.RootElement;
-
             var vm = new CulturalHeritageEditViewModel
             {
                 Id = id,
@@ -190,7 +183,6 @@ namespace WebApp.Controllers
                 Minorities = await FetchListAsync<NationalMinorityViewModel>(client, "NationalMinority"),
                 Topics = await FetchListAsync<TopicViewModel>(client, "Topic")
             };
-
             return View(vm);
         }
 
@@ -231,7 +223,7 @@ namespace WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ── HELPERS ─────────────────────────────────────────
+        // ── HELPERS ────────────────────────────────────────────
 
         private void AttachBearerToken(HttpClient client)
         {
@@ -242,46 +234,48 @@ namespace WebApp.Controllers
         }
 
         private static JsonElement UnwrapValues(JsonElement el)
-        {
-            return el.ValueKind == JsonValueKind.Object
-                && el.TryGetProperty("$values", out var inner)
-                ? inner : el;
-        }
+            => el.ValueKind == JsonValueKind.Object
+               && el.TryGetProperty("$values", out var inner)
+               ? inner : el;
 
         private static List<string> ExtractTopics(JsonElement topicsElem)
         {
             var arr = UnwrapValues(topicsElem);
-            if (arr.ValueKind != JsonValueKind.Array) return new List<string>();
+            if (arr.ValueKind != JsonValueKind.Array)
+                return new List<string>();
 
             return arr.EnumerateArray()
                       .Select(item =>
-                        item.TryGetProperty("topic", out var tObj)
-                          ? tObj.GetProperty("name").GetString() ?? ""
-                          : item.GetProperty("name").GetString() ?? ""
+                          item.TryGetProperty("topic", out var tObj)
+                            ? tObj.GetProperty("name").GetString() ?? ""
+                            : item.GetProperty("name").GetString() ?? ""
                       ).ToList();
         }
 
         private static List<int> ExtractTopicIds(JsonElement topicsElem)
         {
             var arr = UnwrapValues(topicsElem);
-            if (arr.ValueKind != JsonValueKind.Array) return new List<int>();
+            if (arr.ValueKind != JsonValueKind.Array)
+                return new List<int>();
 
             return arr.EnumerateArray()
                       .Select(item =>
-                        item.TryGetProperty("topic", out var tObj)
-                          ? tObj.GetProperty("id").GetInt32()
-                          : item.GetProperty("id").GetInt32()
+                          item.TryGetProperty("topic", out var tObj)
+                            ? tObj.GetProperty("id").GetInt32()
+                            : item.GetProperty("id").GetInt32()
                       ).ToList();
         }
 
         private async Task<List<T>> FetchListAsync<T>(HttpClient client, string url)
         {
             var resp = await client.GetAsync(url);
-            if (!resp.IsSuccessStatusCode) return new List<T>();
+            if (!resp.IsSuccessStatusCode)
+                return new List<T>();
 
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
             var arr = UnwrapValues(doc.RootElement);
-            if (arr.ValueKind != JsonValueKind.Array) return new List<T>();
+            if (arr.ValueKind != JsonValueKind.Array)
+                return new List<T>();
 
             return JsonSerializer.Deserialize<List<T>>(
                 arr.GetRawText(),

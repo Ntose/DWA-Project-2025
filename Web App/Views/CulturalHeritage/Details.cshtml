@@ -6,7 +6,8 @@
 {
     <img src="@Model.ImageUrl"
          alt="@Model.Name"
-         class="img-fluid mb-3" />
+         class="img-fluid mb-3"
+         />
 }
 
 <p>@Model.Description</p>
@@ -21,7 +22,7 @@
 {
     <div class="mb-2">
         <strong>@c.Author</strong>
-        <small>@c.Timestamp.ToLocalTime():g</small>
+        <small>@c.Timestamp.ToLocalTime()</small>
         <div>@c.Text</div>
     </div>
 }
