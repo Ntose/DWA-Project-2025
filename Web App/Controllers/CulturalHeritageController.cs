@@ -1,4 +1,6 @@
 ﻿// File: WebApp/Controllers/CulturalHeritageController.cs
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -11,66 +13,119 @@ using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    [Authorize]                    // require login
+    [Authorize]
     public class CulturalHeritageController : Controller
     {
         private readonly IHttpClientFactory _http;
-        public CulturalHeritageController(IHttpClientFactory http)
-            => _http = http;
+        public CulturalHeritageController(IHttpClientFactory http) => _http = http;
 
         // GET: /CulturalHeritage
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
-            // fetch raw JSON
-            var raw = await client.GetStringAsync("CulturalHeritage");
-            using var doc = JsonDocument.Parse(raw);
-            var root = doc.RootElement;
-            if (root.ValueKind == JsonValueKind.Object &&
-                root.TryGetProperty("$values", out var vals))
-                root = vals;
+            List<CulturalHeritageListViewModel> list;
+            try
+            {
+                var resp = await client.GetAsync("CulturalHeritage");
+                if (!resp.IsSuccessStatusCode)
+                    return View(new List<CulturalHeritageListViewModel>());
 
-            var list = JsonSerializer.Deserialize<List<CulturalHeritageListViewModel>>(
-                root.GetRawText(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            ) ?? new List<CulturalHeritageListViewModel>();
+                using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+                var root = UnwrapValues(doc.RootElement);
+                list = root.ValueKind == JsonValueKind.Array
+                    ? root.EnumerateArray().Select(el => new CulturalHeritageListViewModel
+                    {
+                        Id = el.GetProperty("id").GetInt32(),
+                        Name = el.GetProperty("name").GetString() ?? "",
+                        MinorityName = el.GetProperty("nationalMinority")
+                                          .GetProperty("name").GetString() ?? "",
+                        Topics = ExtractTopics(el.GetProperty("topics"))
+                    }).ToList()
+                    : new List<CulturalHeritageListViewModel>();
+            }
+            catch
+            {
+                list = new List<CulturalHeritageListViewModel>();
+            }
 
             return View(list);
         }
 
         // GET: /CulturalHeritage/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
-            var resp = await client.GetAsync($"CulturalHeritage/{id}");
-            if (!resp.IsSuccessStatusCode)
-                return NotFound();
-
-            // manually build DetailsViewModel
-            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
-            var r = doc.RootElement;
-
-            var vm = new CulturalHeritageDetailsViewModel
+            CulturalHeritageDetailsViewModel vm;
+            try
             {
-                Id = r.GetProperty("id").GetInt32(),
-                Name = r.GetProperty("name").GetString()!,
-                Description = r.GetProperty("description").GetString() ?? "",
-                ImageUrl = r.GetProperty("imageUrl").GetString() ?? "",
-                MinorityName = r.GetProperty("nationalMinority").GetProperty("name").GetString()!,
-                Topics = r.GetProperty("topics")
-                                 .EnumerateArray()
-                                 .Select(t => t.GetProperty("topic").GetProperty("name").GetString()!)
-            };
+                var resp = await client.GetAsync($"CulturalHeritage/{id}");
+                if (!resp.IsSuccessStatusCode) return NotFound();
 
+                using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+                var r = doc.RootElement;
+
+                vm = new CulturalHeritageDetailsViewModel
+                {
+                    Id = r.GetProperty("id").GetInt32(),
+                    Name = r.GetProperty("name").GetString() ?? "",
+                    Description = r.GetProperty("description").GetString() ?? "",
+                    ImageUrl = r.GetProperty("imageUrl").GetString() ?? "",
+                    MinorityName = r.GetProperty("nationalMinority")
+                                    .GetProperty("name").GetString() ?? "",
+                    Themes = ExtractTopics(r.GetProperty("topics"))
+                };
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var cResp = await client.GetAsync($"CulturalHeritage/{id}/Comments");
+                if (cResp.IsSuccessStatusCode)
+                    vm.Comments = await cResp.Content.ReadFromJsonAsync<List<CommentViewModel>>()
+                                  ?? new List<CommentViewModel>();
+            }
+            catch
+            {
+                vm.Comments = new List<CommentViewModel>();
+            }
+
+            vm.NewComment = new CommentCreateViewModel();
             return View(vm);
         }
 
+        // POST: /CulturalHeritage/PostComment/5
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostComment(int id, CommentCreateViewModel newComment)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction(nameof(Details), new { id });
+
+            var client = _http.CreateClient("DataAPI");
+            AttachBearerToken(client);
+
+            try
+            {
+                await client.PostAsJsonAsync(
+                    $"CulturalHeritage/{id}/Comments",
+                    new { Text = newComment.Text }
+                );
+            }
+            catch { /* swallow */ }
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
         // GET: /CulturalHeritage/Create
-        [Authorize(Roles = "Administrator")]
+        [HttpGet, Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
             var client = _http.CreateClient("DataAPI");
@@ -85,8 +140,7 @@ namespace WebApp.Controllers
         }
 
         // POST: /CulturalHeritage/Create
-        [HttpPost, ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [HttpPost, Authorize(Roles = "Admin"), ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CulturalHeritageEditViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -95,33 +149,31 @@ namespace WebApp.Controllers
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
-            var payload = new
+            var resp = await client.PostAsJsonAsync("CulturalHeritage", new
             {
-                Name = vm.Name,
-                Description = vm.Description,
-                ImageUrl = vm.ImageUrl,
-                NationalMinorityId = vm.NationalMinorityId,
-                TopicIds = vm.TopicIds
-            };
+                vm.Name,
+                vm.Description,
+                vm.ImageUrl,
+                vm.NationalMinorityId,
+                vm.TopicIds
+            });
 
-            var resp = await client.PostAsJsonAsync("CulturalHeritage", payload);
             if (resp.IsSuccessStatusCode)
                 return RedirectToAction(nameof(Index));
 
-            await HandleErrors(vm, resp);
-            return View(vm);
+            ModelState.AddModelError("", await resp.Content.ReadAsStringAsync());
+            return await ReloadForm(vm);
         }
 
         // GET: /CulturalHeritage/Edit/5
-        [Authorize(Roles = "Administrator")]
+        [HttpGet, Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
             var resp = await client.GetAsync($"CulturalHeritage/{id}");
-            if (!resp.IsSuccessStatusCode)
-                return NotFound();
+            if (!resp.IsSuccessStatusCode) return NotFound();
 
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
             var r = doc.RootElement;
@@ -129,23 +181,21 @@ namespace WebApp.Controllers
             var vm = new CulturalHeritageEditViewModel
             {
                 Id = id,
-                Name = r.GetProperty("name").GetString()!,
+                Name = r.GetProperty("name").GetString() ?? "",
                 Description = r.GetProperty("description").GetString() ?? "",
                 ImageUrl = r.GetProperty("imageUrl").GetString() ?? "",
-                NationalMinorityId = r.GetProperty("nationalMinority").GetProperty("id").GetInt32(),
-                TopicIds = r.GetProperty("topics")
-                                       .EnumerateArray()
-                                       .Select(t => t.GetProperty("topic").GetProperty("id").GetInt32())
-                                       .ToList(),
+                NationalMinorityId = r.GetProperty("nationalMinority")
+                                      .GetProperty("id").GetInt32(),
+                TopicIds = ExtractTopicIds(r.GetProperty("topics")),
                 Minorities = await FetchListAsync<NationalMinorityViewModel>(client, "NationalMinority"),
                 Topics = await FetchListAsync<TopicViewModel>(client, "Topic")
             };
+
             return View(vm);
         }
 
         // POST: /CulturalHeritage/Edit/5
-        [HttpPost, ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [HttpPost, Authorize(Roles = "Admin"), ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CulturalHeritageEditViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -154,26 +204,25 @@ namespace WebApp.Controllers
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
 
-            var payload = new
-            {
-                Name = vm.Name,
-                Description = vm.Description,
-                ImageUrl = vm.ImageUrl,
-                NationalMinorityId = vm.NationalMinorityId,
-                TopicIds = vm.TopicIds
-            };
+            var resp = await client.PutAsJsonAsync(
+                $"CulturalHeritage/{vm.Id}", new
+                {
+                    vm.Name,
+                    vm.Description,
+                    vm.ImageUrl,
+                    vm.NationalMinorityId,
+                    vm.TopicIds
+                });
 
-            var resp = await client.PutAsJsonAsync($"CulturalHeritage/{vm.Id}", payload);
             if (resp.IsSuccessStatusCode)
                 return RedirectToAction(nameof(Index));
 
-            await HandleErrors(vm, resp);
-            return View(vm);
+            ModelState.AddModelError("", await resp.Content.ReadAsStringAsync());
+            return await ReloadForm(vm);
         }
 
         // POST: /CulturalHeritage/Delete/5
-        [HttpPost, ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [HttpPost, Authorize(Roles = "Admin"), ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var client = _http.CreateClient("DataAPI");
@@ -182,7 +231,7 @@ namespace WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ── helpers ───────────────────────────────────────────────
+        // ── HELPERS ─────────────────────────────────────────
 
         private void AttachBearerToken(HttpClient client)
         {
@@ -192,17 +241,50 @@ namespace WebApp.Controllers
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
         }
 
+        private static JsonElement UnwrapValues(JsonElement el)
+        {
+            return el.ValueKind == JsonValueKind.Object
+                && el.TryGetProperty("$values", out var inner)
+                ? inner : el;
+        }
+
+        private static List<string> ExtractTopics(JsonElement topicsElem)
+        {
+            var arr = UnwrapValues(topicsElem);
+            if (arr.ValueKind != JsonValueKind.Array) return new List<string>();
+
+            return arr.EnumerateArray()
+                      .Select(item =>
+                        item.TryGetProperty("topic", out var tObj)
+                          ? tObj.GetProperty("name").GetString() ?? ""
+                          : item.GetProperty("name").GetString() ?? ""
+                      ).ToList();
+        }
+
+        private static List<int> ExtractTopicIds(JsonElement topicsElem)
+        {
+            var arr = UnwrapValues(topicsElem);
+            if (arr.ValueKind != JsonValueKind.Array) return new List<int>();
+
+            return arr.EnumerateArray()
+                      .Select(item =>
+                        item.TryGetProperty("topic", out var tObj)
+                          ? tObj.GetProperty("id").GetInt32()
+                          : item.GetProperty("id").GetInt32()
+                      ).ToList();
+        }
+
         private async Task<List<T>> FetchListAsync<T>(HttpClient client, string url)
         {
-            var raw = await client.GetStringAsync(url);
-            using var jd = JsonDocument.Parse(raw);
-            var el = jd.RootElement;
-            if (el.ValueKind == JsonValueKind.Object
-             && el.TryGetProperty("$values", out var inner))
-                el = inner;
+            var resp = await client.GetAsync(url);
+            if (!resp.IsSuccessStatusCode) return new List<T>();
+
+            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+            var arr = UnwrapValues(doc.RootElement);
+            if (arr.ValueKind != JsonValueKind.Array) return new List<T>();
 
             return JsonSerializer.Deserialize<List<T>>(
-                el.GetRawText(),
+                arr.GetRawText(),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             ) ?? new List<T>();
         }
@@ -211,28 +293,10 @@ namespace WebApp.Controllers
         {
             var client = _http.CreateClient("DataAPI");
             AttachBearerToken(client);
+
             vm.Minorities = await FetchListAsync<NationalMinorityViewModel>(client, "NationalMinority");
             vm.Topics = await FetchListAsync<TopicViewModel>(client, "Topic");
             return View(vm);
-        }
-
-        private async Task HandleErrors(CulturalHeritageEditViewModel vm, HttpResponseMessage resp)
-        {
-            var raw = await resp.Content.ReadAsStringAsync();
-            try
-            {
-                var prob = JsonSerializer.Deserialize<ValidationProblemDetails>(
-                    raw,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                );
-                foreach (var kv in prob.Errors)
-                    foreach (var e in kv.Value)
-                        ModelState.AddModelError(kv.Key, e);
-            }
-            catch
-            {
-                ModelState.AddModelError("", raw);
-            }
         }
     }
 }

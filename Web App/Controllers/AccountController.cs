@@ -105,7 +105,13 @@ namespace WebApp.Controllers
 
             return LocalRedirect(vm.ReturnUrl);
         }
-
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            // returns Views/Account/AccessDenied.cshtml
+            return View();
+        }
         // GET: /Account/Register
         [HttpGet, AllowAnonymous]
         public IActionResult Register(string returnUrl = null) =>

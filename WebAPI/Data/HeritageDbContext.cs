@@ -24,7 +24,7 @@ namespace WebAPI.Data
 
 		// User, comments, and logs
 		public DbSet<ApplicationUser> ApplicationUser { get; set; }
-		public DbSet<Comment> Comment { get; set; }
+		public DbSet<Comment> Comments { get; set; }
 		public DbSet<Log> Log { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

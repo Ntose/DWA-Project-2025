@@ -27,8 +27,9 @@
     <div class="mb-3">
         <label asp-for="NationalMinorityId" class="form-label"></label>
         <select asp-for="NationalMinorityId"
-                asp-items="@(new SelectList(Model.Minorities,"Id","Name"))"
-                class="form-select"></select>
+                asp-items="@(new SelectList(Model.Minorities, "Id","Name"))"
+                class="form-select">
+        </select>
     </div>
 
     <div class="mb-3">

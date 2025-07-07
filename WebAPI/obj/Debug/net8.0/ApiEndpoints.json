@@ -48,90 +48,6 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.CommentController",
-    "Method": "Create",
-    "RelativePath": "api/Comment",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "createDto",
-        "Type": "WebAPI.Dtos.Comment.CommentCreateDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "WebAPI.Dtos.Comment.CommentReadDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.CommentController",
-    "Method": "Delete",
-    "RelativePath": "api/Comment/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.CommentController",
-    "Method": "Approve",
-    "RelativePath": "api/Comment/{id}/approve",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.CommentController",
-    "Method": "GetForHeritage",
-    "RelativePath": "api/Comment/heritage/{heritageId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "heritageId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[WebAPI.Dtos.Comment.CommentReadDto, WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
     "ContainingType": "WebAPI.Controllers.CulturalHeritageController",
     "Method": "GetAll",
     "RelativePath": "api/CulturalHeritage",
@@ -152,6 +68,53 @@
       {
         "Name": "createDto",
         "Type": "WebAPI.Dtos.CulturalHeritage.CulturalHeritageCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.CommentsController",
+    "Method": "Get",
+    "RelativePath": "api/CulturalHeritage/{heritageId}/Comments",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "heritageId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[WebAPI.Controllers.CommentDto, WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.CommentsController",
+    "Method": "Post",
+    "RelativePath": "api/CulturalHeritage/{heritageId}/Comments",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "heritageId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "input",
+        "Type": "WebAPI.Controllers.CommentCreateDto",
         "IsRequired": true
       }
     ],

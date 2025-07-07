@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="alert alert-danger">
+    You do not have permission to view that page.
+</div>
+
+<p>
+    <a asp-controller="Home"
+       asp-action="Index"
+       class="btn btn-primary">
+        Return to Home
+    </a>
+</p>
