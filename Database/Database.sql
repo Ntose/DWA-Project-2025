@@ -1,140 +1,180 @@
--- =========================================
--- Tables
--- =========================================
+/*
+Do not use database modifying (ALTER DATABASE), creating (CREATE DATABASE) or switching (USE) statements 
+in this file.
+*/
 
--- 1. NationalMinority
-CREATE TABLE NationalMinority
-(
-    Id   INT IDENTITY(1,1) PRIMARY KEY,
-    Name NVARCHAR(100)    NOT NULL,
-    CONSTRAINT UQ_NationalMinority_Name UNIQUE(Name)
-);
+-- ========================================
+-- 1. Users
+-- ========================================
+CREATE TABLE [dbo].[ApplicationUser](
+    [Id]             INT IDENTITY(1,1)    NOT NULL,
+    [Username]       NVARCHAR(100)        NOT NULL,
+    [Email]          NVARCHAR(200)        NOT NULL,
+    [PasswordHash]   NVARCHAR(500)        NOT NULL,
+    [FirstName]      NVARCHAR(100)        NULL,
+    [LastName]       NVARCHAR(100)        NULL,
+    [Phone]          NVARCHAR(50)         NULL,
+    [DateRegistered] DATETIME             NOT NULL,
+    [Role]           NVARCHAR(50)         NOT NULL,
+    CONSTRAINT [PK_ApplicationUser] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+GO
 
--- 2. Topic
-CREATE TABLE Topic
-(
-    Id   INT IDENTITY(1,1) PRIMARY KEY,
-    Name NVARCHAR(100)    NOT NULL,
-    CONSTRAINT UQ_Topic_Name UNIQUE(Name)
-);
+-- ========================================
+-- 2. NationalMinority (1-to-N)
+-- ========================================
+CREATE TABLE [dbo].[NationalMinority](
+    [Id]   INT IDENTITY(1,1) NOT NULL,
+    [Name] NVARCHAR(100)     NOT NULL,
+    CONSTRAINT [PK_NationalMinority] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+GO
 
--- 3. CulturalHeritage
-CREATE TABLE CulturalHeritage
-(
-    Id                  INT IDENTITY(1,1) PRIMARY KEY,
-    Name                NVARCHAR(200)    NOT NULL,
-    Description         NVARCHAR(MAX)    NULL,
-    ImageUrl            NVARCHAR(500)    NULL,
-    DateAdded           DATETIME         NOT NULL DEFAULT GETDATE(),
-    NationalMinorityId  INT              NOT NULL,
-    CONSTRAINT UQ_CulturalHeritage_Name UNIQUE(Name),
-    CONSTRAINT FK_CH_NationalMinority
-        FOREIGN KEY(NationalMinorityId) REFERENCES NationalMinority(Id)
-);
+-- ========================================
+-- 3. Topic (1-to-N)
+-- ========================================
+CREATE TABLE [dbo].[Topic](
+    [Id]   INT IDENTITY(1,1) NOT NULL,
+    [Name] NVARCHAR(100)     NOT NULL,
+    CONSTRAINT [PK_Topic] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+GO
 
--- 4. CulturalHeritageTopic (bridge M–N)
-CREATE TABLE CulturalHeritageTopic
-(
-    CulturalHeritageId  INT NOT NULL,
-    TopicId             INT NOT NULL,
-    PRIMARY KEY(CulturalHeritageId, TopicId),
-    CONSTRAINT FK_CHT_CulturalHeritage
-        FOREIGN KEY(CulturalHeritageId) REFERENCES CulturalHeritage(Id),
-    CONSTRAINT FK_CHT_Topic
-        FOREIGN KEY(TopicId) REFERENCES Topic(Id)
-);
+-- ========================================
+-- 4. CulturalHeritage (1-to-N)
+-- ========================================
+CREATE TABLE [dbo].[CulturalHeritage](
+    [Id]                 INT IDENTITY(1,1) NOT NULL,
+    [Name]               NVARCHAR(200)     NOT NULL,
+    [Description]        NVARCHAR(MAX)     NULL,
+    [ImageUrl]           NVARCHAR(500)     NULL,
+    [DateAdded]          DATETIME         NOT NULL,
+    [NationalMinorityId] INT              NOT NULL,
+    CONSTRAINT [PK_CulturalHeritage] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+GO
 
--- 5. ApplicationUser
-CREATE TABLE ApplicationUser
-(
-    Id              INT IDENTITY(1,1) PRIMARY KEY,
-    Username        NVARCHAR(100)    NOT NULL,
-    Email           NVARCHAR(200)    NOT NULL,
-    PasswordHash    NVARCHAR(500)    NOT NULL,
-    FirstName       NVARCHAR(100)    NULL,
-    LastName        NVARCHAR(100)    NULL,
-    Phone           NVARCHAR(50)     NULL,
-    DateRegistered  DATETIME         NOT NULL DEFAULT GETDATE(),
-    CONSTRAINT UQ_User_Username UNIQUE(Username),
-    CONSTRAINT UQ_User_Email    UNIQUE(Email)
-);
+-- ========================================
+-- 5. CulturalHeritageTopic (M-to-N)
+-- ========================================
+CREATE TABLE [dbo].[CulturalHeritageTopic](
+    [CulturalHeritageId] INT NOT NULL,
+    [TopicId]            INT NOT NULL,
+    CONSTRAINT [PK_CulturalHeritageTopic] PRIMARY KEY CLUSTERED ([CulturalHeritageId] ASC, [TopicId] ASC)
+)
+GO
 
--- 6. Comment
-CREATE TABLE Comment
-(
-    Id                  INT IDENTITY(1,1) PRIMARY KEY,
-    Text                NVARCHAR(MAX)    NOT NULL,
-    Timestamp           DATETIME         NOT NULL DEFAULT GETDATE(),
-    CulturalHeritageId  INT              NOT NULL,
-    UserId              INT              NOT NULL,
-    Approved            BIT              NOT NULL DEFAULT 0,
-    CONSTRAINT FK_Comment_CH
-        FOREIGN KEY(CulturalHeritageId) REFERENCES CulturalHeritage(Id),
-    CONSTRAINT FK_Comment_User
-        FOREIGN KEY(UserId) REFERENCES ApplicationUser(Id)
-);
+-- ========================================
+-- 6. Comments (1-to-N)
+-- ========================================
+CREATE TABLE [dbo].[Comments](
+    [Id]                 INT IDENTITY(1,1) NOT NULL,
+    [Text]               NVARCHAR(MAX)     NOT NULL,
+    [Timestamp]          DATETIME         NOT NULL,
+    [Approved]           BIT              NOT NULL,
+    [CulturalHeritageId] INT              NOT NULL,
+    [UserId]             INT              NOT NULL,
+    CONSTRAINT [PK_Comments] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+GO
 
+-- ========================================
 -- 7. Log
-CREATE TABLE Log
-(
-    Id        INT IDENTITY(1,1) PRIMARY KEY,
-    Timestamp DATETIME      NOT NULL DEFAULT GETDATE(),
-    Level     NVARCHAR(20)  NOT NULL,
-    Message   NVARCHAR(MAX) NOT NULL
-);
+-- ========================================
+CREATE TABLE [dbo].[Log](
+    [Id]        INT IDENTITY(1,1) NOT NULL,
+    [Timestamp] DATETIME         NOT NULL,
+    [Level]     NVARCHAR(20)     NOT NULL,
+    [Message]   NVARCHAR(MAX)    NOT NULL,
+    CONSTRAINT [PK_Log] PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+GO
 
+-- ========================================
+-- Indexes
+-- ========================================
+CREATE UNIQUE INDEX [UQ_ApplicationUser_Username] 
+    ON [dbo].[ApplicationUser]([Username]);
+GO
+CREATE UNIQUE INDEX [UQ_ApplicationUser_Email] 
+    ON [dbo].[ApplicationUser]([Email]);
+GO
+CREATE UNIQUE INDEX [UQ_NationalMinority_Name] 
+    ON [dbo].[NationalMinority]([Name]);
+GO
+CREATE UNIQUE INDEX [UQ_Topic_Name] 
+    ON [dbo].[Topic]([Name]);
+GO
+CREATE UNIQUE INDEX [UQ_CulturalHeritage_Name] 
+    ON [dbo].[CulturalHeritage]([Name]);
+GO
 
--- =========================================
--- Seed Data
--- =========================================
+-- ========================================
+-- Default constraints
+-- ========================================
+ALTER TABLE [dbo].[ApplicationUser] 
+    ADD CONSTRAINT [DF_ApplicationUser_DateRegistered] 
+    DEFAULT (GETDATE()) FOR [DateRegistered];
+GO
+ALTER TABLE [dbo].[ApplicationUser] 
+    ADD CONSTRAINT [DF_ApplicationUser_Role] 
+    DEFAULT ('User') FOR [Role];
+GO
+ALTER TABLE [dbo].[CulturalHeritage] 
+    ADD CONSTRAINT [DF_CulturalHeritage_DateAdded] 
+    DEFAULT (GETDATE()) FOR [DateAdded];
+GO
+ALTER TABLE [dbo].[Comments] 
+    ADD CONSTRAINT [DF_Comments_Timestamp] 
+    DEFAULT (GETDATE()) FOR [Timestamp];
+GO
+ALTER TABLE [dbo].[Comments] 
+    ADD CONSTRAINT [DF_Comments_Approved] 
+    DEFAULT ((0)) FOR [Approved];
+GO
+ALTER TABLE [dbo].[Log] 
+    ADD CONSTRAINT [DF_Log_Timestamp] 
+    DEFAULT (GETDATE()) FOR [Timestamp];
+GO
 
--- 1) NationalMinorities
-INSERT INTO NationalMinority (Name) VALUES
-  ('Hungarian'),
-  ('Serbian'),
-  ('Italian');
+-- ========================================
+-- Foreign key constraints
+-- ========================================
+ALTER TABLE [dbo].[CulturalHeritage] 
+    WITH CHECK ADD CONSTRAINT [FK_CH_NationalMinority] 
+    FOREIGN KEY([NationalMinorityId])
+    REFERENCES [dbo].[NationalMinority]([Id]);
+GO
+ALTER TABLE [dbo].[CulturalHeritageTopic] 
+    WITH CHECK ADD CONSTRAINT [FK_CHT_CH] 
+    FOREIGN KEY([CulturalHeritageId])
+    REFERENCES [dbo].[CulturalHeritage]([Id])
+    ON DELETE CASCADE;
+GO
+ALTER TABLE [dbo].[CulturalHeritageTopic] 
+    WITH CHECK ADD CONSTRAINT [FK_CHT_Topic] 
+    FOREIGN KEY([TopicId])
+    REFERENCES [dbo].[Topic]([Id])
+    ON DELETE CASCADE;
+GO
+ALTER TABLE [dbo].[Comments] 
+    WITH CHECK ADD CONSTRAINT [FK_Comments_CH] 
+    FOREIGN KEY([CulturalHeritageId])
+    REFERENCES [dbo].[CulturalHeritage]([Id])
+    ON DELETE CASCADE;
+GO
+ALTER TABLE [dbo].[Comments] 
+    WITH CHECK ADD CONSTRAINT [FK_Comments_User] 
+    FOREIGN KEY([UserId])
+    REFERENCES [dbo].[ApplicationUser]([Id])
+    ON DELETE CASCADE;
+GO
 
--- 2) Topics
-INSERT INTO Topic (Name) VALUES
-  ('Art'),
-  ('Architecture'),
-  ('Gastronomy'),
-  ('Music');
-
--- 3) CulturalHeritage items
-INSERT INTO CulturalHeritage (Name, Description, ImageUrl, NationalMinorityId) VALUES
-  ('Folk Dance of Vojvodina',
-   'Traditional dance from the Vojvodina region, showcasing vibrant costumes and choreography.',
-   'https://upload.wikimedia.org/wikipedia/commons/6/65/Serbian_Folk_Dance.jpg',
-   1),
-  ('Ðerdap Gorge Architecture',
-   'Historic fortifications and structures along the Ðerdap Gorge on the Danube River.',
-   'https://upload.wikimedia.org/wikipedia/commons/2/2d/Djerdap_Gorge_fortress.jpg',
-   2),
-  ('Trieste Seafood Festival',
-   'Annual gastronomic event celebrating traditional seafood dishes in Trieste, Italy.',
-   'https://upload.wikimedia.org/wikipedia/commons/a/a0/Trieste_seafood_market.jpg',
-   3);
-
--- 4) CulturalHeritage–Topic relationships
-INSERT INTO CulturalHeritageTopic (CulturalHeritageId, TopicId) VALUES
-  (1, 1),  -- Folk Dance – Art
-  (1, 4),  -- Folk Dance – Music
-  (2, 2),  -- Ðerdap Gorge – Architecture
-  (3, 3);  -- Trieste Festival – Gastronomy
-
--- 5) ApplicationUser entries
-INSERT INTO ApplicationUser (Username, Email, PasswordHash, FirstName, LastName, Phone) VALUES
-  ('admin01', 'admin@heritage.local', 'AQAAAAEAACcQAAAAEIa...hashed...', 'Platform', 'Admin', '+385912345678'),
-  ('user01',  'user@heritage.local',  'AQAAAAEAACcQAAAAERx...hashed...', 'John',     'Doe',   '+385987654321');
-
--- 6) Sample comments
-INSERT INTO Comment (Text, CulturalHeritageId, UserId, Approved) VALUES
-  ('Amazing dance tradition! Would love more video samples.',  1, 2, 1),
-  ('Can we include historical maps of the Ðerdap fort?',       2, 2, 0);
-
--- 7) Initial Logs
-INSERT INTO Log (Level, Message) VALUES
-  ('Info',  'CulturalHeritage with id=1 created.'),
-  ('Info',  'CulturalHeritage with id=2 created.'),
-  ('Info',  'CulturalHeritage with id=3 created.');
+-- ========================================
+-- Seed: Admin user
+-- ========================================
+INSERT INTO [dbo].[ApplicationUser]
+    ([Username],[Email],[PasswordHash],[FirstName],[LastName],[Phone],[Role])
+VALUES
+    ('admin','admin@example.com','admin','System','Administrator','000-000-0000','Admin');
+GO
